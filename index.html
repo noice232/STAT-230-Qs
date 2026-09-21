@@ -1861,5 +1861,5 @@ function updateProgress() {
   document.getElementById("prog-fill").style.width = `${(done/total)*100}%`;
 }
 
-render();
+window.onload = render;
 </script>
