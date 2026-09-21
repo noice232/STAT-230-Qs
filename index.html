@@ -1,6 +1,15 @@
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>STAT 230 Masterclass Question Bank</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css"
+      onerror="this.onerror=null;this.href='https://unpkg.com/katex@0.16.11/dist/katex.min.css'">
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+</head>
+<body>
 <style>
   :root {
     --bg: #0c1220;
@@ -1827,6 +1836,7 @@ function render() {
 }
 
 function renderMath() {
+  if (typeof renderMathInElement !== "function") return; // KaTeX not ready / blocked
   renderMathInElement(document.getElementById("main"), {
     delimiters: [
       {left: "$$", right: "$$", display: true},
@@ -1861,5 +1871,36 @@ function updateProgress() {
   document.getElementById("prog-fill").style.width = `${(done/total)*100}%`;
 }
 
-window.onload = render;
+function loadFallbackKatex(done) {
+  var css = document.createElement("link");
+  css.rel = "stylesheet";
+  css.href = "https://unpkg.com/katex@0.16.11/dist/katex.min.css";
+  document.head.appendChild(css);
+  var s1 = document.createElement("script");
+  s1.src = "https://unpkg.com/katex@0.16.11/dist/katex.min.js";
+  s1.onload = function () {
+    var s2 = document.createElement("script");
+    s2.src = "https://unpkg.com/katex@0.16.11/dist/contrib/auto-render.min.js";
+    s2.onload = done;
+    document.head.appendChild(s2);
+  };
+  document.head.appendChild(s1);
+}
+
+function boot() {
+  render();                 // questions render no matter what
+  renderMath();             // typeset now if KaTeX already loaded
+  if (typeof renderMathInElement === "function") return;
+  var tries = 0;
+  (function wait() {
+    if (typeof renderMathInElement === "function") { renderMath(); return; }
+    if (tries++ < 20) { setTimeout(wait, 100); return; }   // ~2s grace for primary CDN
+    loadFallbackKatex(renderMath);                          // else pull from unpkg
+  })();
+}
+
+if (document.readyState !== "loading") boot();
+else window.addEventListener("DOMContentLoaded", boot);
 </script>
+</body>
+</html>
