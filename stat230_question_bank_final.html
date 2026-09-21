@@ -1,0 +1,1866 @@
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+
+<style>
+  :root {
+    --bg: #0c1220;
+    --surface: #151d2e;
+    --surface2: #1c2640;
+    --border: #2a3655;
+    --text: #e2e8f0;
+    --text-dim: #8899b3;
+    --accent-1: #6ee7b7;
+    --accent-2: #7dd3fc;
+    --accent-3: #c4b5fd;
+    --accent-4: #fca5a5;
+    --accent-5: #fcd34d;
+    --accent-x: #f0abfc;
+    --correct: #34d399;
+    --tag-bg: rgba(110,231,183,0.12);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--bg); color: var(--text); line-height: 1.65; min-height: 100vh;
+  }
+  .header {
+    padding: 2.5rem 2rem 1.5rem; text-align: center;
+    border-bottom: 1px solid var(--border);
+    background: linear-gradient(180deg, #111b2e 0%, var(--bg) 100%);
+  }
+  .header h1 { font-size: 1.6rem; font-weight: 700; letter-spacing: -0.03em; margin-bottom: 0.3rem; }
+  .header .sub { color: var(--text-dim); font-size: 0.85rem; }
+  .progress-bar-container {
+    max-width: 420px; margin: 1.2rem auto 0; display: flex; align-items: center;
+    gap: 0.75rem; font-size: 0.8rem; color: var(--text-dim);
+  }
+  .progress-track { flex: 1; height: 6px; background: var(--surface2); border-radius: 3px; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--accent-1); border-radius: 3px; transition: width 0.4s ease; }
+  .tabs {
+    display: flex; flex-wrap: wrap; justify-content: center; gap: 0.4rem;
+    padding: 1rem 1rem 0; max-width: 900px; margin: 0 auto;
+  }
+  .tab {
+    padding: 0.4rem 0.85rem; border-radius: 6px; border: 1px solid var(--border);
+    background: transparent; color: var(--text-dim); cursor: pointer; font-size: 0.78rem;
+    font-family: inherit; transition: all 0.2s; white-space: nowrap;
+  }
+  .tab:hover { border-color: var(--accent-2); color: var(--text); }
+  .tab.active { background: var(--surface2); border-color: var(--accent-2); color: var(--accent-2); }
+  .main { max-width: 820px; margin: 0 auto; padding: 1.5rem 1rem 4rem; }
+  .chapter-label {
+    font-size: 0.75rem; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 0.08em; margin: 2rem 0 0.8rem; padding-left: 0.2rem;
+  }
+  .ch1 .chapter-label, .ch1 .q-num { color: var(--accent-1); }
+  .ch2 .chapter-label, .ch2 .q-num { color: var(--accent-2); }
+  .ch3 .chapter-label, .ch3 .q-num { color: var(--accent-3); }
+  .ch4 .chapter-label, .ch4 .q-num { color: var(--accent-4); }
+  .ch5 .chapter-label, .ch5 .q-num { color: var(--accent-5); }
+  .chx .chapter-label, .chx .q-num { color: var(--accent-x); }
+  .card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+    margin-bottom: 0.75rem; overflow: hidden; transition: border-color 0.2s;
+  }
+  .card:hover { border-color: #3d4f73; }
+  .card.done { border-left: 3px solid var(--correct); }
+  .card-head {
+    display: flex; align-items: flex-start; gap: 0.75rem; padding: 1rem 1.1rem;
+    cursor: pointer; user-select: none;
+  }
+  .q-num { font-size: 0.7rem; font-weight: 700; min-width: 28px; padding-top: 2px; font-variant-numeric: tabular-nums; }
+  .q-body { flex: 1; }
+  .q-title { font-size: 0.92rem; font-weight: 600; margin-bottom: 0.4rem; line-height: 1.4; }
+  .q-text { font-size: 0.85rem; color: var(--text); line-height: 1.7; }
+  .q-text p { margin-bottom: 0.5rem; }
+  .tags { display: flex; gap: 0.35rem; margin-top: 0.5rem; flex-wrap: wrap; }
+  .tag {
+    font-size: 0.65rem; padding: 0.15rem 0.5rem; border-radius: 4px;
+    background: var(--tag-bg); color: var(--accent-1); font-weight: 500;
+  }
+  .tag.trap { background: rgba(252,165,165,0.12); color: var(--accent-4); }
+  .chevron { font-size: 0.8rem; color: var(--text-dim); transition: transform 0.2s; padding-top: 3px; }
+  .card.open .chevron { transform: rotate(90deg); }
+  .solution { display: none; padding: 0 1.1rem 1.2rem 3rem; border-top: 1px solid var(--border); }
+  .card.open .solution { display: block; padding-top: 1rem; }
+  .sol-label {
+    font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.07em; color: var(--correct); margin-bottom: 0.6rem;
+  }
+  .sol-text { font-size: 0.85rem; line-height: 1.8; color: var(--text); }
+  .sol-text p { margin-bottom: 0.6rem; }
+  .sol-text .step { margin-left: 0.5rem; padding-left: 0.8rem; border-left: 2px solid var(--border); margin-bottom: 0.5rem; }
+  .mark-btn {
+    margin-top: 0.8rem; padding: 0.35rem 0.9rem; border-radius: 5px; border: 1px solid var(--border);
+    background: transparent; color: var(--text-dim); font-size: 0.75rem; cursor: pointer;
+    font-family: inherit; transition: all 0.2s;
+  }
+  .mark-btn:hover { border-color: var(--correct); color: var(--correct); }
+  .mark-btn.marked { background: rgba(52,211,153,0.12); border-color: var(--correct); color: var(--correct); }
+  .katex { font-size: 0.95em !important; }
+  .katex-display { margin: 0.6em 0 !important; overflow-x: auto; overflow-y: hidden; }
+  .src-tag { font-size: 0.6rem; padding: 0.12rem 0.4rem; border-radius: 3px; background: rgba(125,211,252,0.1); color: var(--accent-2); font-weight: 500; margin-left: 0.3rem; }
+  @media (max-width: 600px) {
+    .header { padding: 1.5rem 1rem 1rem; }
+    .header h1 { font-size: 1.3rem; }
+    .main { padding: 1rem 0.6rem 3rem; }
+    .card-head { padding: 0.8rem; }
+    .solution { padding-left: 0.8rem; }
+    .tabs { gap: 0.3rem; padding: 0.8rem 0.5rem 0; }
+    .tab { padding: 0.35rem 0.6rem; font-size: 0.72rem; }
+  }
+</style>
+
+<div class="header">
+  <h1>STAT 230 Masterclass Question Bank</h1>
+  <div class="sub">101 diagnostic questions across all chapters + cross-topic traps</div>
+  <div class="progress-bar-container">
+    <span id="prog-label">0 / 101</span>
+    <div class="progress-track"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
+  </div>
+</div>
+
+<div class="tabs" id="tabs"></div>
+<div class="main" id="main"></div>
+
+<script>
+const Q = [
+// ===================== CHAPTER 1 =====================
+{ch:"ch1",chLabel:"Ch 1: Counting & Probability",id:1,title:"Constrained Position Counting",
+text:`How many 6-letter arrangements of the letters in SQUARE can be formed if the arrangement must start with S and end with E?`,
+tags:["counting","constraints"],
+sol:`Fix S in position 1 and E in position 6. The remaining 4 letters (Q, U, A, R) fill positions 2-5. Since all 4 are distinct, the number of arrangements is $4! = 24$.
+
+Key idea: when positions are constrained, fix those first, then count free arrangements of what remains.`},
+
+{ch:"ch1",chLabel:"Ch 1: Counting & Probability",id:2,title:"Block Method (Consecutive Constraint)",
+text:`In how many ways can the digits 1, 2, 3, 4, 5, 6 be arranged in a row so that 3 and 4 are adjacent but 3 appears before 4?`,
+tags:["counting","block method"],trap:true,
+sol:`Treat "34" as a single block (order within the block is fixed: 3 before 4). Now we have 5 objects: {34}, 1, 2, 5, 6. These can be arranged in $5! = 120$ ways.
+
+Trap: if the problem said "3 and 4 adjacent" without specifying order, we would have $2 \\times 5! = 240$. But here the internal order is fixed, so no factor of 2.`},
+
+{ch:"ch1",chLabel:"Ch 1: Counting & Probability",id:3,title:"Balls in Boxes Trap",
+text:`Five distinguishable balls are placed into 3 distinguishable boxes with no restriction on how many balls go in each box. How many arrangements are there?
+
+A student writes $\\binom{3}{5}$. What is wrong, and what is the correct answer?`,
+tags:["counting","balls in boxes"],trap:true,
+sol:`$\\binom{3}{5}$ is undefined (and conceptually wrong: it treats this as "choose 5 from 3"). The correct model is: each of the 5 balls independently chooses one of 3 boxes. This is ordered sampling with replacement: $3^5 = 243$.
+
+The trap: "objects into bins" with no restrictions = $n^k$ (each of $k$ objects has $n$ choices). It is NOT a combination or permutation.`},
+
+{ch:"ch1",chLabel:"Ch 1: Counting & Probability",id:4,title:"Stars and Bars with Minimum Constraints",
+text:`How many non-negative integer solutions are there to $x_1 + x_2 + x_3 + x_4 = 15$ subject to $x_1 \\geq 2, x_2 \\geq 1, x_3 \\geq 0, x_4 \\geq 3$?`,
+tags:["counting","stars and bars"],
+sol:`Shift variables to absorb the minimums. Let $y_1 = x_1 - 2$, $y_2 = x_2 - 1$, $y_3 = x_3$, $y_4 = x_4 - 3$. Then each $y_i \\geq 0$ and:
+$$y_1 + y_2 + y_3 + y_4 = 15 - 2 - 1 - 0 - 3 = 9$$
+
+By stars and bars: $\\binom{9 + 4 - 1}{4 - 1} = \\binom{12}{3} = 220$.`},
+
+{ch:"ch1",chLabel:"Ch 1: Counting & Probability",id:5,title:"Symmetry Argument for Ordering",
+text:`A committee of 5 is chosen from 10 people (including Alice and Bob). Given that both Alice and Bob are on the committee, what is the probability that Alice's name appears before Bob's name when the committee members are listed in a random order?`,
+tags:["counting","symmetry"],
+sol:`Given both are on the committee, consider only their relative order among the 5 listed positions. By symmetry, Alice is equally likely to appear before or after Bob, so:
+
+$$P(\\text{Alice before Bob} \\mid \\text{both on committee}) = \\frac{1}{2}$$
+
+No complicated counting needed. The key insight: when a subset of elements is present, the probability they appear in any specific relative order is $1/(\\text{number of orderings of that subset})$.`},
+
+{ch:"ch1",chLabel:"Ch 1: Counting & Probability",id:6,title:"Derangements",
+text:`Four friends each bring a gift to a party. The gifts are randomly redistributed so each person gets exactly one gift. What is the probability that nobody receives their own gift?`,
+tags:["counting","derangements"],
+sol:`Total arrangements: $4! = 24$. Derangements (no fixed points):
+$$D_4 = 4!\\left(1 - 1 + \\frac{1}{2!} - \\frac{1}{3!} + \\frac{1}{4!}\\right) = 24\\left(\\frac{1}{2} - \\frac{1}{6} + \\frac{1}{24}\\right) = 24 \\cdot \\frac{9}{24} = 9$$
+
+$$P(\\text{derangement}) = \\frac{D_4}{4!} = \\frac{9}{24} = \\frac{3}{8}$$
+
+Note: $D_n/n! \\to 1/e \\approx 0.368$ as $n \\to \\infty$. Even for $n = 4$, $3/8 = 0.375$ is close.`},
+
+{ch:"ch1",chLabel:"Ch 1: Counting & Probability",id:7,title:"Birthday Problem Variant",
+text:`In a group of 6 people, what is the probability that at least two share the same birth month? Assume 12 equally likely birth months.`,
+tags:["counting","birthday problem"],
+sol:`Use the complement: $P(\\text{at least one match}) = 1 - P(\\text{all different})$.
+
+$$P(\\text{all different}) = \\frac{12}{12} \\cdot \\frac{11}{12} \\cdot \\frac{10}{12} \\cdot \\frac{9}{12} \\cdot \\frac{8}{12} \\cdot \\frac{7}{12} = \\frac{12 \\cdot 11 \\cdot 10 \\cdot 9 \\cdot 8 \\cdot 7}{12^6}$$
+
+$$= \\frac{665280}{2985984} \\approx 0.2228$$
+
+$$P(\\text{at least one match}) = 1 - 0.2228 \\approx 0.7772$$`},
+
+{ch:"ch1",chLabel:"Ch 1: Counting & Probability",id:8,title:"Multinomial Coefficients",
+text:`How many distinct arrangements of the letters in MISSISSIPPI are there?`,
+tags:["counting","multinomial"],
+sol:`MISSISSIPPI has 11 letters: M(1), I(4), S(4), P(2). The number of distinct arrangements of objects with repeated elements is:
+
+$$\\frac{11!}{1! \\cdot 4! \\cdot 4! \\cdot 2!} = \\frac{39916800}{1 \\cdot 24 \\cdot 24 \\cdot 2} = \\frac{39916800}{1152} = 34650$$`},
+// ===================== CHAPTER 2 =====================
+{ch:"ch2",chLabel:"Ch 2: Conditional Probability",id:9,title:"\"At Least One of Each\" via Inclusion-Exclusion",
+text:`A fair die is rolled 5 times. What is the probability of getting at least one 1 AND at least one 6?`,
+tags:["inclusion-exclusion","complement"],trap:true,
+sol:`Let $A$ = {at least one 1}, $B$ = {at least one 6}. We want $P(A \\cap B)$.
+
+TRAP: $A$ and $B$ are NOT independent. You cannot multiply $P(A) \\cdot P(B)$.
+
+Correct approach via inclusion-exclusion on complements:
+$$P(A \\cap B) = 1 - P(A^c \\cup B^c) = 1 - P(A^c) - P(B^c) + P(A^c \\cap B^c)$$
+
+<p class="step">$P(A^c)$ = P(no 1s) $= (5/6)^5$</p>
+<p class="step">$P(B^c)$ = P(no 6s) $= (5/6)^5$</p>
+<p class="step">$P(A^c \\cap B^c)$ = P(no 1s and no 6s) $= (4/6)^5$</p>
+
+$$P(A \\cap B) = 1 - 2(5/6)^5 + (4/6)^5 = 1 - 2(0.4019) + 0.1317 \\approx 0.3279$$`},
+
+{ch:"ch2",chLabel:"Ch 2: Conditional Probability",id:10,title:"Disjoint vs. Independent Trap",
+text:`Events $A$ and $B$ satisfy $P(A) = 0.3$, $P(B) = 0.4$, and $A \\cap B = \\emptyset$. Are $A$ and $B$ independent?`,
+tags:["independence"],trap:true,
+sol:`No. If $A$ and $B$ are disjoint, $P(A \\cap B) = 0$. For independence, we need $P(A \\cap B) = P(A)P(B) = 0.3 \\times 0.4 = 0.12 \\neq 0$.
+
+Disjoint events with positive probabilities are always DEPENDENT: knowing $A$ occurred guarantees $B$ did not, which changes $P(B)$ from 0.4 to 0. The only exception is if one event has probability 0.`},
+
+{ch:"ch2",chLabel:"Ch 2: Conditional Probability",id:11,title:"Bayes' Theorem Full Pipeline",
+text:`A factory has two machines. Machine A produces 60% of all items and has a 5% defect rate. Machine B produces 40% of all items and has a 8% defect rate. If a randomly selected item is defective, what is the probability it came from Machine B?`,
+tags:["Bayes","total probability"],
+sol:`Define: $B$ = from Machine B, $D$ = defective. We want $P(B|D)$.
+
+Step 1: Identify the partition: $\\{A, B\\}$ (Machine A or B).
+
+Step 2: Compute $P(D)$ via law of total probability:
+$$P(D) = P(D|A)P(A) + P(D|B)P(B) = (0.05)(0.60) + (0.08)(0.40) = 0.03 + 0.032 = 0.062$$
+
+Step 3: Apply Bayes:
+$$P(B|D) = \\frac{P(D|B)P(B)}{P(D)} = \\frac{(0.08)(0.40)}{0.062} = \\frac{0.032}{0.062} \\approx 0.5161$$
+
+Despite producing fewer items, Machine B is slightly more likely to be the source of a defective item because of its higher defect rate.`},
+
+{ch:"ch2",chLabel:"Ch 2: Conditional Probability",id:12,title:"Choosing the Right Partition",
+text:`A bag contains 3 red and 2 blue balls. You draw one ball, note its color (but do not replace it), then draw a second ball. What is the probability the second ball is red?`,
+tags:["total probability","partition"],
+sol:`Partition on the first draw: $R_1$ = first ball is red, $B_1$ = first ball is blue.
+
+$$P(R_2) = P(R_2|R_1)P(R_1) + P(R_2|B_1)P(B_1)$$
+
+<p class="step">$P(R_1) = 3/5$, and given first was red, 2 red remain out of 4: $P(R_2|R_1) = 2/4$</p>
+<p class="step">$P(B_1) = 2/5$, and given first was blue, 3 red remain out of 4: $P(R_2|B_1) = 3/4$</p>
+
+$$P(R_2) = \\frac{2}{4} \\cdot \\frac{3}{5} + \\frac{3}{4} \\cdot \\frac{2}{5} = \\frac{6}{20} + \\frac{6}{20} = \\frac{12}{20} = \\frac{3}{5}$$
+
+Interesting: the marginal probability of drawing red on the second draw equals the prior $3/5$. This is a general result for exchangeable draws.`},
+
+{ch:"ch2",chLabel:"Ch 2: Conditional Probability",id:13,title:"Independence of Complements",
+text:`If $P(A) = 0.4$, $P(B) = 0.5$, and $A$ and $B$ are independent, find $P(A^c \\cap B^c)$.`,
+tags:["independence","complement"],
+sol:`Since $A$ and $B$ are independent, so are $A^c$ and $B^c$. Therefore:
+
+$$P(A^c \\cap B^c) = P(A^c) \\cdot P(B^c) = (1 - 0.4)(1 - 0.5) = 0.6 \\times 0.5 = 0.3$$
+
+Proof that complements are independent: $P(A^c \\cap B^c) = 1 - P(A \\cup B) = 1 - P(A) - P(B) + P(A \\cap B) = 1 - P(A) - P(B) + P(A)P(B) = (1-P(A))(1-P(B)) = P(A^c)P(B^c)$.`},
+
+{ch:"ch2",chLabel:"Ch 2: Conditional Probability",id:14,title:"Extended Product Rule",
+text:`A box has 10 items: 4 defective. Three items are drawn without replacement. What is the probability all three are defective?`,
+tags:["product rule","without replacement"],
+sol:`Using the extended product rule (chain of conditional probabilities):
+
+$$P(D_1 \\cap D_2 \\cap D_3) = P(D_1) \\cdot P(D_2|D_1) \\cdot P(D_3|D_1 \\cap D_2)$$
+
+$$= \\frac{4}{10} \\cdot \\frac{3}{9} \\cdot \\frac{2}{8} = \\frac{24}{720} = \\frac{1}{30}$$
+
+Equivalently: $\\binom{4}{3}/\\binom{10}{3} = 4/120 = 1/30$.`},
+
+{ch:"ch2",chLabel:"Ch 2: Conditional Probability",id:15,title:"Prosecutor's Fallacy",
+text:`A blood type found at a crime scene matches only 1 in 10,000 people. The defendant has this blood type. A lawyer argues: "There is only a 1 in 10,000 chance the defendant is innocent." What logical error is being made?`,
+tags:["Bayes","fallacy"],trap:true,
+sol:`The lawyer is confusing $P(\\text{match} \\mid \\text{innocent})$ with $P(\\text{innocent} \\mid \\text{match})$.
+
+$P(\\text{match} \\mid \\text{innocent}) = 1/10000$ says: IF innocent, the chance of a match is tiny.
+
+But $P(\\text{innocent} \\mid \\text{match})$ requires Bayes' theorem with a prior. In a city of 1,000,000 people, about 100 would match this blood type. Without other evidence, the defendant is just one of ~100 possible matches, giving $P(\\text{guilty} \\mid \\text{match}) \\approx 1/100$, not $9999/10000$.
+
+This is the Prosecutor's Fallacy: equating $P(\\text{evidence} \\mid \\text{innocence})$ with $P(\\text{innocence} \\mid \\text{evidence})$.`},
+
+{ch:"ch2",chLabel:"Ch 2: Conditional Probability",id:16,title:"Simpson's Paradox",
+text:`Treatment A has a higher recovery rate than Treatment B for mild cases (80% vs 70%) AND for severe cases (30% vs 20%). Yet when data is combined, Treatment B has a higher overall recovery rate. How is this possible?`,
+tags:["Simpson's paradox","conditioning"],
+sol:`This is Simpson's Paradox. It arises from unequal group sizes creating a confounding variable.
+
+Example: Treatment A is mostly given to severe cases (900 severe, 100 mild). Treatment B is mostly given to mild cases (100 severe, 900 mild).
+
+Treatment A: $0.80(100) + 0.30(900) = 80 + 270 = 350$ out of 1000 = 35%
+Treatment B: $0.70(900) + 0.20(100) = 630 + 20 = 650$ out of 1000 = 65%
+
+Treatment B wins overall despite losing in BOTH subgroups, because it was disproportionately assigned to the easier cases. The resolution: condition on severity (the confounding variable) to get the true causal comparison.`},
+// ===================== CHAPTER 3 =====================
+{ch:"ch3",chLabel:"Ch 3: Discrete Distributions",id:17,title:"Distribution Decision Matrix",
+text:`For each scenario, name the distribution:
+<p>(a) A quality inspector tests 20 items (independently, defect rate 0.05). Let $X$ = number of defectives.</p>
+<p>(b) A box has 100 items, 5 defective. 20 are drawn without replacement. Let $X$ = number of defectives.</p>
+<p>(c) Items are tested one by one (independently, defect rate 0.05) until the 3rd defective is found. Let $X$ = number tested.</p>
+<p>(d) From the box of 100 items (5 defective), items are drawn without replacement until the 3rd defective is found. Let $X$ = number drawn.</p>`,
+tags:["distribution identification"],trap:true,
+sol:`<p>(a) Fixed $n = 20$ independent trials, counting successes: $X \\sim \\text{Bin}(20, 0.05)$</p>
+
+<p>(b) Fixed $n = 20$ draws WITHOUT replacement from finite population: $X \\sim \\text{Hyp}(N=100, r=5, n=20)$</p>
+
+<p>(c) Independent trials until $k$-th success ($k = 3$): $X \\sim \\text{NB}(3, 0.05)$</p>
+
+<p>(d) Drawing WITHOUT replacement until $k$-th success: this is the Negative Hypergeometric. There is NO standard named distribution in STAT 230. Must compute directly. Common trap: students write NB here because "trials until $k$-th success" sounds like NB, but NB requires independence (with replacement).</p>`},
+
+{ch:"ch3",chLabel:"Ch 3: Discrete Distributions",id:18,title:"Geometric Series for Normalization",
+text:`Let $f(x) = c \\cdot (2/3)^x$ for $x = 0, 1, 2, \\ldots$ Find the constant $c$ that makes this a valid probability function.`,
+tags:["geometric series","normalization"],
+sol:`For a valid p.f., we need $\\sum_{x=0}^{\\infty} c(2/3)^x = 1$.
+
+Using the geometric series formula $\\sum_{x=0}^{\\infty} r^x = 1/(1-r)$ for $|r| < 1$:
+
+$$c \\cdot \\frac{1}{1 - 2/3} = c \\cdot \\frac{1}{1/3} = 3c = 1$$
+
+So $c = 1/3$. The p.f. is $f(x) = (1/3)(2/3)^x = (1/3)(2/3)^x$ for $x = 0,1,2,\\ldots$
+
+This is actually a $\\text{Geo}(1/3)$ distribution shifted to start at $x = 0$ (counting failures before first success).`},
+
+{ch:"ch3",chLabel:"Ch 3: Discrete Distributions",id:19,title:"MGF Identification with Algebraic Decomposition",
+text:`A random variable $X$ has MGF $M_X(t) = \\frac{e^{4t} - e^t}{3(e^t - 1)}$. Identify the distribution of $X$.`,
+tags:["MGF","algebraic decomposition"],trap:true,
+sol:`Factor step by step:
+$$M_X(t) = \\frac{1}{3} \\cdot \\frac{e^{4t} - e^t}{e^t - 1} = \\frac{1}{3} \\cdot e^t \\cdot \\frac{e^{3t} - 1}{e^t - 1}$$
+
+Now use the geometric series identity $\\frac{e^{nt} - 1}{e^t - 1} = 1 + e^t + e^{2t} + \\cdots + e^{(n-1)t}$:
+
+$$= \\frac{1}{3} \\cdot e^t \\cdot (1 + e^t + e^{2t}) = \\frac{1}{3}(e^t + e^{2t} + e^{3t})$$
+
+This is $E(e^{tX}) = \\frac{1}{3}e^{t \\cdot 1} + \\frac{1}{3}e^{t \\cdot 2} + \\frac{1}{3}e^{t \\cdot 3}$, which means $P(X = 1) = P(X = 2) = P(X = 3) = 1/3$.
+
+$X \\sim \\text{DiscreteUniform}\\{1, 2, 3\\}$.`},
+
+{ch:"ch3",chLabel:"Ch 3: Discrete Distributions",id:20,title:"Negative Binomial Structural Trap",
+text:`In repeated independent Bernoulli trials with $p = 0.3$, find $P(\\text{4th success occurs on trial 10})$.`,
+tags:["Negative Binomial","structure"],trap:true,
+sol:`Let $X \\sim \\text{NB}(4, 0.3)$. We need $P(X = 10)$.
+
+The structure: "4th success on trial 10" means exactly 3 successes in the first 9 trials AND a success on trial 10.
+
+$$f(10) = \\binom{10-1}{4-1} (0.3)^4 (0.7)^{10-4} = \\binom{9}{3} (0.3)^4 (0.7)^6$$
+
+$$= 84 \\times 0.0081 \\times 0.117649 \\approx 0.0800$$
+
+Common errors: (1) Using $\\binom{10}{4}$ instead of $\\binom{9}{3}$ (forgetting to fix the last trial as a success), (2) writing $(0.7)^{10-3}$ instead of $(0.7)^{10-4}$ (wrong failure count).`},
+
+{ch:"ch3",chLabel:"Ch 3: Discrete Distributions",id:21,title:"Poisson Parameter Recovery",
+text:`Let $X \\sim \\text{Poi}(\\mu)$. If $P(X = 0) = 0.05$, find $P(X = 2)$.`,
+tags:["Poisson","parameter recovery"],
+sol:`From $P(X = 0) = e^{-\\mu} = 0.05$, solve: $\\mu = -\\ln(0.05) = \\ln(20) \\approx 2.996$.
+
+Now compute $P(X = 2)$:
+$$P(X = 2) = \\frac{e^{-\\mu} \\mu^2}{2!} = \\frac{0.05 \\times (\\ln 20)^2}{2}$$
+
+$$= \\frac{0.05 \\times 8.978}{2} \\approx \\frac{0.4489}{2} \\approx 0.2245$$
+
+General principle: given one probability, recover the parameter, then compute anything else.`},
+
+{ch:"ch3",chLabel:"Ch 3: Discrete Distributions",id:22,title:"E(g(X)) ≠ g(E(X)) Trap",
+text:`$X$ is the number of items sold per day, with $E(X) = 10$ and $\\text{Var}(X) = 4$. Revenue per day is $R = X^2$ dollars. A student claims $E(R) = [E(X)]^2 = 100$. Is this correct?`,
+tags:["expectation","Jensen trap"],trap:true,
+sol:`No. $E(X^2) \\neq [E(X)]^2$ in general. By the variance identity:
+
+$$E(X^2) = \\text{Var}(X) + [E(X)]^2 = 4 + 100 = 104$$
+
+The student underestimates by $\\text{Var}(X) = 4$. This is a consequence of Jensen's inequality: for convex $g$ (like $g(x) = x^2$), $E(g(X)) \\geq g(E(X))$.
+
+Takeaway: when paid a nonlinear function of a random variable, the expected payout is NOT the function applied to the expected value.`},
+
+{ch:"ch3",chLabel:"Ch 3: Discrete Distributions",id:23,title:"Indicator Variable Decomposition",
+text:`A fair coin is tossed 100 times. Using indicator variables, find $E(X)$ and $\\text{Var}(X)$ where $X$ is the number of heads.`,
+tags:["indicators","Binomial"],
+sol:`Write $X = I_1 + I_2 + \\cdots + I_{100}$ where $I_j = 1$ if toss $j$ is heads, 0 otherwise. Each $I_j \\sim \\text{Bern}(0.5)$.
+
+$E(X) = \\sum_{j=1}^{100} E(I_j) = 100 \\times 0.5 = 50$ (by linearity, no independence needed).
+
+For variance, since the tosses are independent, $\\text{Cov}(I_i, I_j) = 0$ for $i \\neq j$:
+$$\\text{Var}(X) = \\sum_{j=1}^{100} \\text{Var}(I_j) = 100 \\times 0.5 \\times 0.5 = 25$$
+
+This gives the familiar Binomial results: $E(X) = np = 50$, $\\text{Var}(X) = np(1-p) = 25$.`},
+
+{ch:"ch3",chLabel:"Ch 3: Discrete Distributions",id:24,title:"Poisson Process Splitting",
+text:`Calls arrive at a call center as a Poisson process at rate 20 per hour. Each call is independently a complaint (probability 0.3) or an inquiry (probability 0.7). Find the probability of receiving exactly 2 complaints in a 30-minute window.`,
+tags:["Poisson process","splitting"],
+sol:`In 30 minutes, total calls $\\sim \\text{Poi}(20 \\times 0.5) = \\text{Poi}(10)$.
+
+By thinning/splitting: complaints arrive as an independent Poisson process with rate $20 \\times 0.3 = 6$ per hour. In 30 minutes, complaints $\\sim \\text{Poi}(6 \\times 0.5) = \\text{Poi}(3)$.
+
+$$P(\\text{complaints} = 2) = \\frac{e^{-3} \\cdot 3^2}{2!} = \\frac{9e^{-3}}{2} \\approx \\frac{9 \\times 0.04979}{2} \\approx 0.2240$$`},
+
+{ch:"ch3",chLabel:"Ch 3: Discrete Distributions",id:25,title:"Tail Sum Formula",
+text:`If $X \\sim \\text{Geo}(p)$ (number of trials until first success), verify $E(X) = 1/p$ using the tail sum formula.`,
+tags:["tail sum","Geometric"],
+sol:`The tail sum formula: for $X$ taking non-negative integer values, $E(X) = \\sum_{k=1}^{\\infty} P(X \\geq k)$.
+
+For $X \\sim \\text{Geo}(p)$, $P(X \\geq k) = (1-p)^{k-1}$ (need at least $k-1$ failures before trial $k$).
+
+$$E(X) = \\sum_{k=1}^{\\infty} (1-p)^{k-1} = \\sum_{j=0}^{\\infty} (1-p)^j = \\frac{1}{1-(1-p)} = \\frac{1}{p}$$
+
+The tail sum formula is useful whenever $P(X \\geq k)$ has a cleaner closed form than the p.f. itself.`},
+
+{ch:"ch3",chLabel:"Ch 3: Discrete Distributions",id:26,title:"MGF of Sums: Multiply, Don't Add",
+text:`Let $X \\sim \\text{Poi}(3)$ and $Y \\sim \\text{Poi}(5)$, independent. A student writes $M_{X+Y}(t) = e^{3(e^t-1)} + e^{5(e^t-1)}$. Is this correct? What is the correct MGF?`,
+tags:["MGF","sums"],trap:true,
+sol:`Incorrect. For independent RVs, $M_{X+Y}(t) = M_X(t) \\cdot M_Y(t)$. You MULTIPLY, never add.
+
+$$M_{X+Y}(t) = e^{3(e^t-1)} \\cdot e^{5(e^t-1)} = e^{(3+5)(e^t-1)} = e^{8(e^t-1)}$$
+
+This is the MGF of $\\text{Poi}(8)$, confirming the reproductive property: sum of independent Poissons is Poisson with summed parameters.
+
+Fatal error: adding MGFs has no probabilistic meaning and produces a function that is NOT a valid MGF (it equals 2 at $t=0$ instead of 1).`},
+// ===================== CHAPTER 4 =====================
+{ch:"ch4",chLabel:"Ch 4: Multivariate Distributions",id:27,title:"Joint Distribution Table",
+text:`$X$ and $Y$ have joint distribution:
+
+| | $Y=0$ | $Y=1$ | $Y=2$ |
+|---|---|---|---|
+| $X=0$ | 0.10 | 0.15 | 0.05 |
+| $X=1$ | 0.20 | 0.25 | 0.10 |
+| $X=2$ | 0.05 | 0.05 | 0.05 |
+
+<p>Find $E(XY)$ and $\\text{Cov}(X,Y)$.</p>`,
+tags:["joint table","covariance"],
+sol:`First, marginals: $f_X(0) = 0.30$, $f_X(1) = 0.55$, $f_X(2) = 0.15$. $f_Y(0) = 0.35$, $f_Y(1) = 0.45$, $f_Y(2) = 0.20$.
+
+$E(X) = 0(0.30) + 1(0.55) + 2(0.15) = 0.85$
+
+$E(Y) = 0(0.35) + 1(0.45) + 2(0.20) = 0.85$
+
+$E(XY) = \\sum_x \\sum_y xy \\cdot f(x,y)$. Only terms where both $x \\neq 0$ and $y \\neq 0$ contribute:
+$$= 1 \\cdot 1 \\cdot 0.25 + 1 \\cdot 2 \\cdot 0.10 + 2 \\cdot 1 \\cdot 0.05 + 2 \\cdot 2 \\cdot 0.05$$
+$$= 0.25 + 0.20 + 0.10 + 0.20 = 0.75$$
+
+$\\text{Cov}(X,Y) = E(XY) - E(X)E(Y) = 0.75 - (0.85)(0.85) = 0.75 - 0.7225 = 0.0275$`},
+
+{ch:"ch4",chLabel:"Ch 4: Multivariate Distributions",id:28,title:"Conditioning on Sum: Bin + Bin → Hyp",
+text:`Let $X \\sim \\text{Bin}(8, 0.3)$ and $Y \\sim \\text{Bin}(12, 0.3)$, independent. Find $P(X = 3 \\mid X + Y = 7)$.`,
+tags:["conditioning on sum","Hypergeometric"],trap:true,
+sol:`Since $X$ and $Y$ are independent Binomials with the SAME $p = 0.3$:
+
+$X + Y \\sim \\text{Bin}(20, 0.3)$
+
+Given $X + Y = 7$, we have $X \\mid X+Y=7 \\sim \\text{Hyp}(N=20, r=8, n=7)$.
+
+Interpretation: 7 total successes out of 20 trials. How many of the 7 fell in the first 8 trials? That is sampling 7 successes from a population of 20 (8 in group 1, 12 in group 2) without replacement.
+
+$$P(X = 3 \\mid X+Y = 7) = \\frac{\\binom{8}{3}\\binom{12}{4}}{\\binom{20}{7}} = \\frac{56 \\times 495}{77520} = \\frac{27720}{77520} \\approx 0.3576$$
+
+TRAP: This only works because $p_1 = p_2$. If the success probabilities differed, the conditional distribution would NOT be Hypergeometric.`},
+
+{ch:"ch4",chLabel:"Ch 4: Multivariate Distributions",id:29,title:"Conditioning on Sum: Poi + Poi → Bin",
+text:`Let $X \\sim \\text{Poi}(2)$ and $Y \\sim \\text{Poi}(3)$, independent. Find $P(X = 1 \\mid X + Y = 4)$.`,
+tags:["conditioning on sum","Poisson"],
+sol:`For independent Poissons: $X \\mid X+Y = n \\sim \\text{Bin}(n, \\mu_1/(\\mu_1 + \\mu_2))$.
+
+Here: $X \\mid X+Y=4 \\sim \\text{Bin}(4, 2/(2+3)) = \\text{Bin}(4, 0.4)$.
+
+$$P(X = 1 \\mid X+Y = 4) = \\binom{4}{1}(0.4)^1(0.6)^3 = 4 \\times 0.4 \\times 0.216 = 0.3456$$
+
+Intuition: given 4 total events occurred across two independent Poisson processes, each event independently "belongs to" process 1 with probability $\\mu_1/(\\mu_1 + \\mu_2) = 2/5$.`},
+
+{ch:"ch4",chLabel:"Ch 4: Multivariate Distributions",id:30,title:"Multinomial Conditional → Binomial",
+text:`In a 10-week competition, each week is won independently by Canada (prob 0.4), US (0.2), or India (0.4). Given India won exactly 4 of the 10 weeks, find $P(\\text{US won exactly 1 week})$.`,
+tags:["Multinomial","conditional"],
+sol:`Given India won 4 weeks, 6 remaining weeks are split between Canada and US. Conditioned on India's count, the remaining weeks form a Binomial with rescaled probabilities:
+
+$$p_{\\text{US}|\\text{not India}} = \\frac{0.2}{0.4 + 0.2} = \\frac{0.2}{0.6} = \\frac{1}{3}$$
+
+So US wins | India = 4 $\\sim \\text{Bin}(6, 1/3)$.
+
+$$P(\\text{US} = 1 \\mid \\text{India} = 4) = \\binom{6}{1}\\left(\\frac{1}{3}\\right)^1\\left(\\frac{2}{3}\\right)^5 = 6 \\times \\frac{1}{3} \\times \\frac{32}{243} = \\frac{192}{729} = \\frac{64}{243} \\approx 0.2634$$`},
+
+{ch:"ch4",chLabel:"Ch 4: Multivariate Distributions",id:31,title:"Var(2X) vs. Var(X₁ + X₂) Trap",
+text:`Let $X \\sim \\text{Bin}(10, 0.5)$. Compare $\\text{Var}(2X)$ and $\\text{Var}(X_1 + X_2)$ where $X_1, X_2$ are independent copies of $X$.`,
+tags:["variance","linear combinations"],trap:true,
+sol:`$\\text{Var}(X) = np(1-p) = 10(0.5)(0.5) = 2.5$.
+
+$\\text{Var}(2X) = 4 \\cdot \\text{Var}(X) = 4 \\times 2.5 = 10$
+
+$\\text{Var}(X_1 + X_2) = \\text{Var}(X_1) + \\text{Var}(X_2) = 2.5 + 2.5 = 5$ (independent, so no covariance)
+
+These are NOT the same! $2X$ doubles ONE outcome (more variable), while $X_1 + X_2$ averages TWO independent outcomes (less variable). The ratio is always 2:1.
+
+Intuition: Imagine flipping 10 coins and doubling the count (extremely volatile) vs. flipping 10 coins twice and adding (regression to the mean).`},
+
+{ch:"ch4",chLabel:"Ch 4: Multivariate Distributions",id:32,title:"Var(X - Y) Trap",
+text:`$X$ and $Y$ are independent with $\\text{Var}(X) = 9$, $\\text{Var}(Y) = 16$. Find $\\text{Var}(X - Y)$.`,
+tags:["variance"],trap:true,
+sol:`$$\\text{Var}(X - Y) = \\text{Var}(X) + (-1)^2\\text{Var}(Y) = 9 + 16 = 25$$
+
+The minus does NOT carry through to variance. Variances always ADD, whether the linear combination uses $+$ or $-$.
+
+Why: variance measures spread. Taking a difference of two independent random quantities creates MORE uncertainty, not less.
+
+Standard deviation: $\\text{SD}(X - Y) = \\sqrt{25} = 5$.`},
+
+{ch:"ch4",chLabel:"Ch 4: Multivariate Distributions",id:33,title:"Law of Total Expectation",
+text:`A store gets $N$ customers per day where $N \\sim \\text{Poi}(50)$. Each customer spends an amount $X_i$ independently with $E(X_i) = 20$ and $\\text{Var}(X_i) = 100$. Find $E(S)$ and $\\text{Var}(S)$ where $S = \\sum_{i=1}^{N} X_i$.`,
+tags:["random sums","total expectation","total variance"],
+sol:`This is a random sum problem. $S = X_1 + X_2 + \\cdots + X_N$ where $N$ is random.
+
+$E(S) = E(N) \\cdot E(X_1) = 50 \\times 20 = 1000$
+
+For variance, use the random sum formula:
+$$\\text{Var}(S) = E(N) \\cdot \\text{Var}(X_1) + [E(X_1)]^2 \\cdot \\text{Var}(N)$$
+$$= 50 \\times 100 + 20^2 \\times 50 = 5000 + 20000 = 25000$$
+
+Derivation: condition on $N$. Given $N = n$, $S = \\sum_{i=1}^n X_i$, so $E(S|N=n) = n \\cdot 20$ and $\\text{Var}(S|N=n) = n \\cdot 100$. Apply Eve's law: $\\text{Var}(S) = E[\\text{Var}(S|N)] + \\text{Var}[E(S|N)] = E[100N] + \\text{Var}[20N]$.`},
+
+{ch:"ch4",chLabel:"Ch 4: Multivariate Distributions",id:34,title:"Eve's Law (Total Variance)",
+text:`$X \\mid P \\sim \\text{Bin}(20, P)$ where $P \\sim U(0, 1)$. Find $E(X)$ and $\\text{Var}(X)$.`,
+tags:["Eve's law","mixture"],
+sol:`By iterated expectation: $E(X) = E[E(X|P)] = E[20P] = 20 \\cdot E(P) = 20 \\cdot 0.5 = 10$.
+
+By Eve's law:
+$$\\text{Var}(X) = E[\\text{Var}(X|P)] + \\text{Var}[E(X|P)]$$
+
+<p class="step">$\\text{Var}(X|P) = 20P(1-P)$, so $E[\\text{Var}(X|P)] = 20E[P(1-P)] = 20(E(P) - E(P^2))$.</p>
+<p class="step">$E(P) = 1/2$, $E(P^2) = \\text{Var}(P) + [E(P)]^2 = 1/12 + 1/4 = 1/3$.</p>
+<p class="step">$E[\\text{Var}(X|P)] = 20(1/2 - 1/3) = 20/6 = 10/3$.</p>
+
+<p class="step">$E(X|P) = 20P$, so $\\text{Var}[E(X|P)] = \\text{Var}(20P) = 400 \\cdot \\text{Var}(P) = 400/12 = 100/3$.</p>
+
+$$\\text{Var}(X) = 10/3 + 100/3 = 110/3 \\approx 36.67$$
+
+Compare: a plain $\\text{Bin}(20, 0.5)$ has variance $5$. The extra variance ($110/3 - 5 = 95/3$) comes from the randomness of $P$ itself.`},
+
+{ch:"ch4",chLabel:"Ch 4: Multivariate Distributions",id:35,title:"Chebyshev: Find Minimum n",
+text:`$X_1, X_2, \\ldots, X_n$ are i.i.d. with $E(X_i) = 100$ and $\\text{Var}(X_i) = 225$. Using Chebyshev's inequality, find the minimum $n$ such that $P(|\\bar{X} - 100| < 3) \\geq 0.95$.`,
+tags:["Chebyshev","minimum n"],
+sol:`We want $P(|\\bar{X} - \\mu| < 3) \\geq 0.95$, equivalently $P(|\\bar{X} - \\mu| \\geq 3) \\leq 0.05$.
+
+$\\text{Var}(\\bar{X}) = \\sigma^2/n = 225/n$.
+
+By Chebyshev: $P(|\\bar{X} - 100| \\geq 3) \\leq \\frac{\\text{Var}(\\bar{X})}{3^2} = \\frac{225}{9n} = \\frac{25}{n}$.
+
+Set $\\frac{25}{n} \\leq 0.05$: $n \\geq 25/0.05 = 500$.
+
+Via CLT (for comparison): $P(|Z| < 3\\sqrt{n}/15) \\geq 0.95$ requires $3\\sqrt{n}/15 \\geq 1.96$, so $\\sqrt{n} \\geq 9.8$, $n \\geq 97$. Chebyshev is far more conservative (500 vs 97) because it makes no distributional assumption.`},
+
+{ch:"ch4",chLabel:"Ch 4: Multivariate Distributions",id:36,title:"Zero Covariance Does Not Imply Independence",
+text:`Let $X \\sim U\\{-1, 0, 1\\}$ (each with probability 1/3) and $Y = X^2$. Show that $\\text{Cov}(X,Y) = 0$ but $X$ and $Y$ are not independent.`,
+tags:["covariance","independence"],trap:true,
+sol:`$E(X) = (-1 + 0 + 1)/3 = 0$.
+
+$E(XY) = E(X \\cdot X^2) = E(X^3) = [(-1)^3 + 0^3 + 1^3]/3 = 0$.
+
+$\\text{Cov}(X,Y) = E(XY) - E(X)E(Y) = 0 - 0 \\cdot E(Y) = 0$.
+
+But $X$ and $Y$ are clearly dependent: $Y = X^2$ is completely determined by $X$. For instance, $P(Y = 1 | X = 1) = 1$, but $P(Y = 1) = 2/3$.
+
+Lesson: zero covariance measures zero LINEAR association. $X$ and $X^2$ have a perfect NONLINEAR relationship that covariance cannot detect.`},
+// ===================== CHAPTER 5 =====================
+{ch:"ch5",chLabel:"Ch 5: Continuous Distributions",id:37,title:"Piecewise PDF Normalization",
+text:`Let $f(x) = \\begin{cases} cx & 0 \\leq x < 2 \\\\ c(4-x) & 2 \\leq x \\leq 4 \\\\ 0 & \\text{otherwise} \\end{cases}$
+
+Find $c$ and $P(1 \\leq X \\leq 3)$.`,
+tags:["piecewise pdf","normalization"],
+sol:`Integrate each piece:
+$$\\int_0^2 cx\\,dx + \\int_2^4 c(4-x)\\,dx = 1$$
+
+$$c\\left[\\frac{x^2}{2}\\right]_0^2 + c\\left[4x - \\frac{x^2}{2}\\right]_2^4 = c(2) + c\\left[(16-8)-(8-2)\\right] = 2c + 2c = 4c = 1$$
+
+So $c = 1/4$.
+
+For $P(1 \\leq X \\leq 3)$, split at $x = 2$:
+$$\\int_1^2 \\frac{x}{4}\\,dx + \\int_2^3 \\frac{4-x}{4}\\,dx = \\frac{1}{4}\\left[\\frac{x^2}{2}\\right]_1^2 + \\frac{1}{4}\\left[4x - \\frac{x^2}{2}\\right]_2^3$$
+
+$$= \\frac{1}{4}\\left(2 - \\frac{1}{2}\\right) + \\frac{1}{4}\\left[(12 - 4.5) - (8 - 2)\\right] = \\frac{3}{8} + \\frac{1.5}{4} = \\frac{3}{8} + \\frac{3}{8} = \\frac{3}{4}$$`},
+
+{ch:"ch5",chLabel:"Ch 5: Continuous Distributions",id:38,title:"Competing Exponentials",
+text:`Two machines have independent lifetimes $X_1 \\sim \\text{Exp}(0.1)$ and $X_2 \\sim \\text{Exp}(0.3)$ (in years). A system fails when EITHER machine fails. Find: (a) the distribution of time to system failure, (b) $P(X_1 \\text{ fails first})$.`,
+tags:["Exponential","competing risks"],
+sol:`(a) System failure time = $\\min(X_1, X_2)$. For independent Exponentials:
+$$\\min(X_1, X_2) \\sim \\text{Exp}(\\lambda_1 + \\lambda_2) = \\text{Exp}(0.1 + 0.3) = \\text{Exp}(0.4)$$
+
+Expected time to system failure: $1/0.4 = 2.5$ years.
+
+Proof: $P(\\min > t) = P(X_1 > t)P(X_2 > t) = e^{-0.1t} \\cdot e^{-0.3t} = e^{-0.4t}$, which is the survival function of $\\text{Exp}(0.4)$.
+
+(b) The probability $X_1$ fails first:
+$$P(X_1 < X_2) = \\frac{\\lambda_1}{\\lambda_1 + \\lambda_2} = \\frac{0.1}{0.4} = 0.25$$
+
+The slower machine (lower rate) is less likely to fail first.`},
+
+{ch:"ch5",chLabel:"Ch 5: Continuous Distributions",id:39,title:"Normal Backward Problem",
+text:`The weight of a cereal box is $X \\sim N(500, 25)$ grams. Find the weight $c$ such that 90% of boxes weigh more than $c$ grams.`,
+tags:["Normal","backward"],
+sol:`We want $P(X > c) = 0.90$, i.e., $P(X \\leq c) = 0.10$.
+
+Standardize: $P\\left(Z \\leq \\frac{c - 500}{5}\\right) = 0.10$
+
+From the standard normal table: $\\Phi^{-1}(0.10) = -1.282$ (since $\\Phi(-1.282) \\approx 0.10$).
+
+$$\\frac{c - 500}{5} = -1.282$$
+$$c = 500 + 5(-1.282) = 500 - 6.41 = 493.59 \\text{ grams}$$
+
+Key steps: (1) translate the probability statement, (2) standardize, (3) look up the $z$-score, (4) un-standardize. Note $\\sigma = \\sqrt{25} = 5$, not 25.`},
+
+{ch:"ch5",chLabel:"Ch 5: Continuous Distributions",id:40,title:"CLT with Continuity Correction",
+text:`Let $X \\sim \\text{Bin}(100, 0.4)$. Use the Normal approximation with continuity correction to find $P(X \\leq 35)$.`,
+tags:["CLT","continuity correction"],
+sol:`$E(X) = np = 40$, $\\text{Var}(X) = np(1-p) = 24$, $\\sigma = \\sqrt{24} \\approx 4.899$.
+
+Check: $np = 40 \\geq 5$ and $n(1-p) = 60 \\geq 5$, so approximation is valid.
+
+With continuity correction ($X$ is discrete, so $P(X \\leq 35) = P(X \\leq 35.5)$ in continuous):
+
+$$P(X \\leq 35) \\approx P\\left(Z \\leq \\frac{35.5 - 40}{4.899}\\right) = P\\left(Z \\leq \\frac{-4.5}{4.899}\\right) = P(Z \\leq -0.918)$$
+
+$$= \\Phi(-0.918) = 1 - \\Phi(0.918) \\approx 1 - 0.8207 = 0.1793$$
+
+Without correction: $P(Z \\leq (35-40)/4.899) = P(Z \\leq -1.021) \\approx 0.1536$. The correction gives a more accurate result.`},
+
+{ch:"ch5",chLabel:"Ch 5: Continuous Distributions",id:41,title:"Sample Proportion via CLT",
+text:`A candidate has true support $p = 0.52$. In a poll of $n = 600$ randomly selected voters, what is the probability the poll shows the candidate losing (i.e., $\\hat{p} < 0.50$)?`,
+tags:["CLT","sample proportion"],
+sol:`$\\hat{p} = X/n$ where $X \\sim \\text{Bin}(600, 0.52)$. By CLT:
+
+$$\\hat{p} \\approx N\\left(p,\\; \\frac{p(1-p)}{n}\\right) = N\\left(0.52,\\; \\frac{0.52 \\times 0.48}{600}\\right) = N(0.52,\\; 0.000416)$$
+
+$$\\text{SD}(\\hat{p}) = \\sqrt{0.000416} \\approx 0.02040$$
+
+$$P(\\hat{p} < 0.50) = P\\left(Z < \\frac{0.50 - 0.52}{0.02040}\\right) = P(Z < -0.980) \\approx 0.1635$$
+
+There is roughly a 16.4% chance the poll incorrectly shows the candidate losing. This illustrates why small leads are "within the margin of error."`},
+
+{ch:"ch5",chLabel:"Ch 5: Continuous Distributions",id:42,title:"Exponential Memoryless Property",
+text:`The lifetime of a lightbulb is $\\text{Exp}(\\lambda)$ with mean 1000 hours. Given that a bulb has already lasted 800 hours, what is the probability it lasts at least 1200 more hours?`,
+tags:["Exponential","memoryless"],
+sol:`$\\lambda = 1/1000$. By the memoryless property:
+
+$$P(X > 800 + 1200 \\mid X > 800) = P(X > 1200) = e^{-1200/1000} = e^{-1.2} \\approx 0.3012$$
+
+The 800 hours already elapsed are irrelevant. The bulb "doesn't remember" it has been running. This is equivalent to asking $P(X > 1200)$ for a brand new bulb.
+
+This is the ONLY continuous distribution with this property. For any other lifetime distribution (e.g., Normal, Uniform), $P(X > s+t \\mid X > s) \\neq P(X > t)$.`},
+
+{ch:"ch5",chLabel:"Ch 5: Continuous Distributions",id:43,title:"CDF Technique for Transformation",
+text:`Let $X \\sim U(0, 1)$. Find the pdf of $Y = -2\\ln(X)$.`,
+tags:["transformation","CDF technique"],
+sol:`CDF technique: find $F_Y(y) = P(Y \\leq y) = P(-2\\ln(X) \\leq y)$.
+
+For $y > 0$: $-2\\ln(X) \\leq y \\iff \\ln(X) \\geq -y/2 \\iff X \\geq e^{-y/2}$
+
+$$F_Y(y) = P(X \\geq e^{-y/2}) = 1 - e^{-y/2} \\quad \\text{for } y > 0$$
+
+(using $P(X \\geq a) = 1 - a$ for $U(0,1)$ when $0 \\leq a \\leq 1$).
+
+Differentiate: $f_Y(y) = F_Y'(y) = \\frac{1}{2}e^{-y/2}$ for $y > 0$.
+
+This is $\\text{Exp}(1/2)$, i.e., Exponential with rate $\\lambda = 1/2$. This is the inverse CDF (probability integral transform) method for generating Exponential random variables from Uniform ones.`},
+
+{ch:"ch5",chLabel:"Ch 5: Continuous Distributions",id:44,title:"Normal Difference Distribution",
+text:`Heights of men are $N(175, 49)$ cm and heights of women are $N(162, 36)$ cm (independent). If a man and woman are randomly paired, what is $P(\\text{woman is taller than man})$?`,
+tags:["Normal","difference"],
+sol:`Let $D = W - M$ (woman's height minus man's height). Since $W$ and $M$ are independent Normals:
+
+$$D \\sim N(\\mu_W - \\mu_M,\\; \\sigma_W^2 + \\sigma_M^2) = N(162 - 175,\\; 36 + 49) = N(-13,\\; 85)$$
+
+Note: variances ADD even though we subtract the RVs.
+
+$$P(W > M) = P(D > 0) = P\\left(Z > \\frac{0 - (-13)}{\\sqrt{85}}\\right) = P\\left(Z > \\frac{13}{9.22}\\right) = P(Z > 1.41)$$
+
+$$= 1 - \\Phi(1.41) \\approx 1 - 0.9207 = 0.0793$$
+
+About 7.9% of random pairings have the woman taller.`},
+// ===================== CROSS-TOPIC =====================
+{ch:"chx",chLabel:"Cross-Topic Connections",id:45,title:"Thresholding: Exponential → Geometric",
+text:`Light bulbs have lifetimes $\\sim \\text{Exp}(0.002)$ hours, independently. A bulb "passes" inspection if its lifetime exceeds 500 hours. Bulbs are tested one at a time. What is the expected number of bulbs tested until the first one passes?`,
+tags:["thresholding","Exp→Geo"],
+sol:`Step 1 (continuous): $p = P(\\text{pass}) = P(X > 500) = e^{-0.002 \\times 500} = e^{-1} \\approx 0.3679$.
+
+Step 2 (discrete): the number of bulbs tested until the first pass is $\\text{Geo}(e^{-1})$.
+
+$$E(\\text{bulbs tested}) = 1/p = 1/e^{-1} = e \\approx 2.718$$
+
+This is the thresholding/discretization bridge: a continuous RV is compared to a cutoff, creating a Bernoulli trial. Stacking independent copies gives Geometric (first success), Binomial (fixed $n$), or Negative Binomial ($k$-th success).`},
+
+{ch:"chx",chLabel:"Cross-Topic Connections",id:46,title:"Multi-Step Approximation Pipeline",
+text:`A shipment of $N = 10000$ items has 50 defective ones. A sample of $n = 100$ is drawn without replacement. Find $P(X \\geq 2)$ where $X$ = number of defectives in the sample. Use appropriate approximations.`,
+tags:["Hyp→Bin→Poi","approximation pipeline"],
+sol:`Exact: $X \\sim \\text{Hyp}(10000, 50, 100)$. Hard to compute directly.
+
+Step 1: Since $n/N = 100/10000 = 1\\%$ is small, approximate Hyp $\\to$ Bin: $X \\approx \\text{Bin}(100, 50/10000) = \\text{Bin}(100, 0.005)$.
+
+Step 2: Since $n$ is large and $p$ is small with $np = 0.5$ moderate, approximate Bin $\\to$ Poi: $X \\approx \\text{Poi}(0.5)$.
+
+$$P(X \\geq 2) = 1 - P(X = 0) - P(X = 1) = 1 - e^{-0.5} - 0.5e^{-0.5}$$
+$$= 1 - 1.5e^{-0.5} = 1 - 1.5(0.6065) = 1 - 0.9098 = 0.0902$$
+
+The pipeline: Hyp $\\to$ Bin (population is large relative to sample) $\\to$ Poi ($p$ is small). Each approximation has a justification.`},
+
+{ch:"chx",chLabel:"Cross-Topic Connections",id:47,title:"Poisson Process: Splitting + Conditional",
+text:`Emails arrive as a Poisson process at rate 10/hour. Each email is spam (prob 0.6) or legitimate (prob 0.4), independently. Given that 3 legitimate emails arrived in an hour, what is the expected total number of emails that arrived?`,
+tags:["Poisson process","splitting","conditional expectation"],
+sol:`By splitting: spam count $S \\sim \\text{Poi}(6)$ and legitimate count $L \\sim \\text{Poi}(4)$, and $S$ and $L$ are INDEPENDENT.
+
+Given $L = 3$, since $S$ is independent of $L$:
+$$E(S + L \\mid L = 3) = E(S \\mid L = 3) + 3 = E(S) + 3 = 6 + 3 = 9$$
+
+The independence of the thinned processes is crucial: knowing the legitimate count tells us nothing about spam.
+
+Without the splitting insight, you might try to condition on the total and work backwards, which is far harder.`},
+
+{ch:"chx",chLabel:"Cross-Topic Connections",id:48,title:"Continuous-to-Discrete: Normal Threshold + Binomial",
+text:`Test scores are $N(70, 100)$. A score above 80 is a "pass." In a class of 25 independent students, what is the probability that at least 20 pass?`,
+tags:["thresholding","Normal→Binomial","CLT"],
+sol:`Step 1: $p = P(X > 80) = P\\left(Z > \\frac{80-70}{10}\\right) = P(Z > 1) = 1 - \\Phi(1) \\approx 0.1587$.
+
+Step 2: passes $\\sim \\text{Bin}(25, 0.1587)$. $E = 25(0.1587) \\approx 3.97$.
+
+We want $P(Y \\geq 20)$ where $Y \\sim \\text{Bin}(25, 0.1587)$. Since the expected number of passes is only about 4, getting 20 or more is astronomically unlikely.
+
+Exact computation (or Poisson approx is NOT appropriate since $p$ is not small):
+$$P(Y \\geq 20) = \\sum_{k=20}^{25} \\binom{25}{k}(0.1587)^k(0.8413)^{25-k}$$
+
+This is essentially 0 (each term is negligible). The answer is $P(Y \\geq 20) \\approx 0$.
+
+Key insight: the threshold converts continuous Normal scores into Bernoulli trials. The Binomial then captures the count structure.`},
+
+{ch:"chx",chLabel:"Cross-Topic Connections",id:49,title:"Limit Theorem Chain: Markov → Chebyshev → CLT",
+text:`Let $X \\sim \\text{Poi}(100)$. Bound $P(X \\geq 150)$ using (a) Markov, (b) Chebyshev. (c) Approximate using CLT.`,
+tags:["Markov","Chebyshev","CLT","comparison"],
+sol:`$E(X) = 100$, $\\text{Var}(X) = 100$, $\\sigma = 10$.
+
+(a) Markov (weakest): $P(X \\geq 150) \\leq \\frac{E(X)}{150} = \\frac{100}{150} = \\frac{2}{3} \\approx 0.667$
+
+(b) Chebyshev (stronger): $P(X \\geq 150) \\leq P(|X - 100| \\geq 50) \\leq \\frac{100}{50^2} = \\frac{100}{2500} = 0.04$
+
+(c) CLT (most precise, approximate): $X \\approx N(100, 100)$.
+$$P(X \\geq 150) \\approx P\\left(Z \\geq \\frac{149.5 - 100}{10}\\right) = P(Z \\geq 4.95) \\approx 0.0000004$$
+
+(used continuity correction: 149.5 instead of 150)
+
+Hierarchy: Markov $\\leq 0.667$, Chebyshev $\\leq 0.04$, CLT $\\approx 4 \\times 10^{-7}$. Each gives a tighter result but requires stronger assumptions.`},
+
+{ch:"chx",chLabel:"Cross-Topic Connections",id:50,title:"Distribution Alchemy: Full Chain",
+text:`Independent daily demands for a product are $\\text{Poi}(8)$. Over 30 days, find the probability that total demand exceeds 270. State and justify the method.`,
+tags:["reproductive","CLT","Poisson"],
+sol:`Let $S = X_1 + X_2 + \\cdots + X_{30}$ where each $X_i \\sim \\text{Poi}(8)$ independently.
+
+Step 1 (reproductive property): $S \\sim \\text{Poi}(30 \\times 8) = \\text{Poi}(240)$.
+
+Step 2 (CLT approximation, since $\\mu = 240$ is large): $S \\approx N(240, 240)$.
+
+$$P(S > 270) \\approx P\\left(Z > \\frac{270.5 - 240}{\\sqrt{240}}\\right) = P\\left(Z > \\frac{30.5}{15.49}\\right) = P(Z > 1.969)$$
+
+(used continuity correction: 270.5 since $S$ is discrete)
+
+$$\\approx 1 - \\Phi(1.97) \\approx 1 - 0.9756 = 0.0244$$
+
+Chain: independent Poi $\\xrightarrow{\\text{sum}}$ Poi(240) $\\xrightarrow{\\text{CLT}}$ Normal. This is the "distribution alchemy" pipeline: recognize the reproductive property, then apply CLT for computation.`},
+// ===================== ORIGINAL GAP FILLS =====================
+{ch:"ch1",chLabel:"Ch 1: Counting & Probability",id:51,title:"Binomial Identities in Counting",
+text:`Using a combinatorial argument (not algebra), prove Vandermonde's identity:
+$$\\binom{m+n}{r} = \\sum_{k=0}^{r} \\binom{m}{k}\\binom{n}{r-k}$$`,
+tags:["binomial identities","Vandermonde"],
+sol:`Consider a group of $m$ men and $n$ women. We want to choose a committee of $r$ people.
+
+Left side: choose $r$ people from $m+n$ total, which is $\\binom{m+n}{r}$.
+
+Right side: condition on the number of men chosen. If we choose $k$ men (from $m$) and $r-k$ women (from $n$), the count is $\\binom{m}{k}\\binom{n}{r-k}$. Summing over all valid $k$ gives the total.
+
+Since both sides count the same thing: $\\binom{m+n}{r} = \\sum_{k=0}^{r}\\binom{m}{k}\\binom{n}{r-k}$.
+
+This is also the identity underlying the Hypergeometric distribution: the numerator $\\binom{r}{x}\\binom{N-r}{n-x}$ sums to $\\binom{N}{n}$ over all valid $x$.`},
+
+{ch:"ch1",chLabel:"Ch 1: Counting & Probability",id:52,title:"Circular Permutations",
+text:`In how many ways can 8 people be seated around a circular table? What if 2 specific people (Alice and Bob) must NOT sit next to each other?`,
+tags:["counting","circular permutations"],
+sol:`Part 1: For circular permutations of $n$ distinct objects, fix one person's position to remove rotational equivalence. The remaining $n-1$ people arrange in $(n-1)!$ ways.
+
+Answer: $(8-1)! = 7! = 5040$.
+
+Part 2: Use complement. Total circular arrangements: $7! = 5040$.
+
+Arrangements where Alice and Bob ARE adjacent: treat them as a single block. This gives $6!$ circular arrangements of 7 "objects" (the block + 6 others). Alice and Bob can swap within the block: $2 \\times 6! = 1440$.
+
+Answer: $7! - 2 \\times 6! = 5040 - 1440 = 3600$.`},
+
+{ch:"ch1",chLabel:"Ch 1: Counting & Probability",id:53,title:"Stars and Bars with Upper-Bound Constraints",
+text:`How many non-negative integer solutions are there to $x_1 + x_2 + x_3 = 10$ with $x_1 \\leq 4$, $x_2 \\leq 5$, $x_3 \\leq 6$?`,
+tags:["stars and bars","upper bounds","inclusion-exclusion"],
+sol:`Let $A_i$ = {solutions violating constraint $i$}. By inclusion-exclusion on the violations:
+
+Unrestricted: $\\binom{10+2}{2} = \\binom{12}{2} = 66$.
+
+$|A_1|$: $x_1 \\geq 5$. Set $y_1 = x_1 - 5 \\geq 0$: $y_1 + x_2 + x_3 = 5$, giving $\\binom{7}{2} = 21$.
+
+$|A_2|$: $x_2 \\geq 6$. Set $y_2 = x_2 - 6$: $x_1 + y_2 + x_3 = 4$, giving $\\binom{6}{2} = 15$.
+
+$|A_3|$: $x_3 \\geq 7$. Set $y_3 = x_3 - 7$: $x_1 + x_2 + y_3 = 3$, giving $\\binom{5}{2} = 10$.
+
+$|A_1 \\cap A_2|$: $x_1 \\geq 5, x_2 \\geq 6$, sum $\\geq 11 > 10$: impossible = 0. Similarly $|A_1 \\cap A_3| = 0$, $|A_2 \\cap A_3| = 0$.
+
+Answer: $66 - 21 - 15 - 10 + 0 = 20$.`},
+
+{ch:"ch2",chLabel:"Ch 2: Conditional Probability",id:54,title:"Pairwise vs. Mutual Independence",
+text:`Let $S = \\{1,2,3,4\\}$ with uniform probability. Define:
+<p>$A = \\{1,2\\}$, $B = \\{1,3\\}$, $C = \\{1,4\\}$.</p>
+<p>Show that $A$, $B$, $C$ are pairwise independent but NOT mutually independent.</p>`,
+tags:["pairwise independence","mutual independence"],trap:true,
+sol:`Each event has probability $2/4 = 1/2$.
+
+Pairwise checks:
+<p class="step">$A \\cap B = \\{1\\}$: $P(A \\cap B) = 1/4 = P(A)P(B) = (1/2)(1/2)$. &#10003;</p>
+<p class="step">$A \\cap C = \\{1\\}$: $P(A \\cap C) = 1/4 = (1/2)(1/2)$. &#10003;</p>
+<p class="step">$B \\cap C = \\{1\\}$: $P(B \\cap C) = 1/4 = (1/2)(1/2)$. &#10003;</p>
+
+All pairs are independent. But:
+$$A \\cap B \\cap C = \\{1\\}: P(A \\cap B \\cap C) = 1/4 \\neq P(A)P(B)P(C) = 1/8$$
+
+Mutual independence fails. Knowing any two of these events occurred forces the outcome to be 1, which determines the third. Pairwise independence does NOT imply mutual independence.`},
+
+{ch:"ch3",chLabel:"Ch 3: Discrete Distributions",id:55,title:"E[X(X-1)] Trick for Variance",
+text:`Let $X \\sim \\text{Bin}(n, p)$. Compute $\\text{Var}(X)$ using the $E[X(X-1)]$ trick.`,
+tags:["E[X(X-1)]","variance shortcut"],
+sol:`The trick: $E(X^2) = E[X(X-1)] + E(X)$, so $\\text{Var}(X) = E[X(X-1)] + E(X) - [E(X)]^2$.
+
+Compute $E[X(X-1)]$ directly:
+$$E[X(X-1)] = \\sum_{x=0}^{n} x(x-1)\\binom{n}{x}p^x(1-p)^{n-x}$$
+
+The $x=0,1$ terms vanish. For $x \\geq 2$, use $x(x-1)\\binom{n}{x} = n(n-1)\\binom{n-2}{x-2}$:
+
+$$= n(n-1)p^2 \\sum_{x=2}^{n}\\binom{n-2}{x-2}p^{x-2}(1-p)^{n-x} = n(n-1)p^2$$
+
+(the sum is a Binomial$(n-2,p)$ total = 1).
+
+Now: $\\text{Var}(X) = n(n-1)p^2 + np - (np)^2 = n^2p^2 - np^2 + np - n^2p^2 = np - np^2 = np(1-p)$.
+
+Why this trick? $E[X(X-1)]$ often factors more cleanly than $E(X^2)$ because the $x(x-1)$ cancels the first two factors of $x!$ in the denominator.`},
+
+{ch:"ch3",chLabel:"Ch 3: Discrete Distributions",id:56,title:"Truncated / Conditional Distribution",
+text:`Let $X \\sim \\text{Poi}(2)$. Find $E(X \\mid X \\geq 1)$.`,
+tags:["truncated distribution","conditional"],
+sol:`The zero-truncated distribution has p.f.:
+$$P(X = x \\mid X \\geq 1) = \\frac{P(X = x)}{P(X \\geq 1)} = \\frac{e^{-2} \\cdot 2^x / x!}{1 - e^{-2}} \\quad \\text{for } x = 1, 2, 3, \\ldots$$
+
+For the conditional expectation, use the law of total expectation in reverse:
+$$E(X) = E(X \\mid X = 0)P(X=0) + E(X \\mid X \\geq 1)P(X \\geq 1)$$
+$$2 = 0 \\cdot e^{-2} + E(X \\mid X \\geq 1)(1 - e^{-2})$$
+$$E(X \\mid X \\geq 1) = \\frac{2}{1 - e^{-2}} = \\frac{2}{1 - 0.1353} \\approx 2.313$$
+
+The conditional mean exceeds the unconditional mean because we have removed the zero outcomes, pulling the average up. This "reverse total expectation" trick avoids summing the truncated series directly.`},
+
+{ch:"ch3",chLabel:"Ch 3: Discrete Distributions",id:57,title:"Multivariate Hypergeometric",
+text:`A box contains 5 red, 4 blue, and 3 green balls. You draw 6 balls without replacement. Find the probability of getting exactly 2 of each color.`,
+tags:["Multivariate Hypergeometric"],
+sol:`This is Multivariate Hypergeometric with $N = 12$, $r_1 = 5$ (red), $r_2 = 4$ (blue), $r_3 = 3$ (green), $n = 6$.
+
+$$P(X_1=2, X_2=2, X_3=2) = \\frac{\\binom{5}{2}\\binom{4}{2}\\binom{3}{2}}{\\binom{12}{6}}$$
+
+$$= \\frac{10 \\times 6 \\times 3}{924} = \\frac{180}{924} = \\frac{15}{77} \\approx 0.1948$$
+
+Each marginal is ordinary Hypergeometric: e.g., $X_1 \\sim \\text{Hyp}(12, 5, 6)$. The constraint $X_1 + X_2 + X_3 = 6$ means only two of the three counts are free.`},
+
+{ch:"ch4",chLabel:"Ch 4: Multivariate Distributions",id:58,title:"Combining Multinomial Categories",
+text:`In a 4-outcome experiment repeated $n = 20$ times with $p_1=0.1, p_2=0.2, p_3=0.3, p_4=0.4$, let $Y$ = count of outcomes that are type 1 or type 2. What is the distribution of $Y$?`,
+tags:["Multinomial","combining categories"],
+sol:`When you lump categories in a Multinomial, the combined count is Binomial. The merged category has probability $p_1 + p_2 = 0.1 + 0.2 = 0.3$.
+
+$$Y = X_1 + X_2 \\sim \\text{Bin}(20, 0.3)$$
+
+$E(Y) = 20(0.3) = 6$, $\\text{Var}(Y) = 20(0.3)(0.7) = 4.2$.
+
+Why this works: each of the 20 trials is independently either "type 1 or 2" (prob 0.3) or "type 3 or 4" (prob 0.7). Collapsing the 4-outcome multinomial into a 2-outcome experiment gives a Binomial. This generalizes: any partition of categories produces a smaller Multinomial (or Binomial if 2 groups).`},
+
+{ch:"ch4",chLabel:"Ch 4: Multivariate Distributions",id:59,title:"Indicator Covariance for Hypergeometric Variance",
+text:`Derive $\\text{Var}(X)$ for $X \\sim \\text{Hyp}(N, r, n)$ using indicator variables.`,
+tags:["indicators","covariance","Hypergeometric"],
+sol:`Write $X = I_1 + I_2 + \\cdots + I_n$ where $I_j = 1$ if draw $j$ is a success. Each $I_j \\sim \\text{Bern}(r/N)$, so $\\text{Var}(I_j) = (r/N)(1 - r/N)$.
+
+Since draws are without replacement, the indicators are dependent. For $i \\neq j$:
+$$E(I_i I_j) = P(\\text{draw } i \\text{ and draw } j \\text{ both success}) = \\frac{r}{N} \\cdot \\frac{r-1}{N-1}$$
+
+$$\\text{Cov}(I_i, I_j) = \\frac{r(r-1)}{N(N-1)} - \\left(\\frac{r}{N}\\right)^2 = -\\frac{r(N-r)}{N^2(N-1)}$$
+
+The covariance is negative (drawing one success reduces the chance of another). Now:
+
+$$\\text{Var}(X) = n \\cdot \\frac{r}{N}\\left(1 - \\frac{r}{N}\\right) + n(n-1)\\left(-\\frac{r(N-r)}{N^2(N-1)}\\right) = n\\frac{r}{N}\\left(1-\\frac{r}{N}\\right)\\frac{N-n}{N-1}$$
+
+The factor $\\frac{N-n}{N-1}$ is the finite population correction. When $N \\to \\infty$ with $r/N \\to p$, it approaches 1 and we recover $np(1-p)$ (Binomial variance).`},
+
+{ch:"ch4",chLabel:"Ch 4: Multivariate Distributions",id:60,title:"Multinomial Covariance",
+text:`In a Multinomial$(n, p_1, p_2, p_3)$ with $n = 100$, $p_1 = 0.5$, $p_2 = 0.3$, $p_3 = 0.2$, find $\\text{Cov}(X_1, X_2)$ and $\\text{Corr}(X_1, X_2)$.`,
+tags:["Multinomial","covariance","correlation"],
+sol:`For Multinomial counts: $\\text{Cov}(X_i, X_j) = -np_ip_j$ (always negative, since more of one category means less of another).
+
+$$\\text{Cov}(X_1, X_2) = -100(0.5)(0.3) = -15$$
+
+For correlation, we need the standard deviations. Each marginal is Binomial:
+<p class="step">$\\text{Var}(X_1) = np_1(1-p_1) = 100(0.5)(0.5) = 25$, so $\\text{SD}(X_1) = 5$</p>
+<p class="step">$\\text{Var}(X_2) = np_2(1-p_2) = 100(0.3)(0.7) = 21$, so $\\text{SD}(X_2) = \\sqrt{21}$</p>
+
+$$\\text{Corr}(X_1, X_2) = \\frac{-15}{5\\sqrt{21}} = \\frac{-15}{22.91} \\approx -0.6547$$
+
+The negative correlation confirms: when $X_1$ is large, $X_2$ tends to be small (they compete for the fixed total $n$).`},
+
+{ch:"ch4",chLabel:"Ch 4: Multivariate Distributions",id:61,title:"Correlation Coefficient Computation",
+text:`From the joint table in Q27 (reproduced below), find $\\text{Corr}(X, Y)$.
+
+| | $Y=0$ | $Y=1$ | $Y=2$ |
+|---|---|---|---|
+| $X=0$ | 0.10 | 0.15 | 0.05 |
+| $X=1$ | 0.20 | 0.25 | 0.10 |
+| $X=2$ | 0.05 | 0.05 | 0.05 |`,
+tags:["correlation","joint table"],
+sol:`From Q27: $E(X) = 0.85$, $E(Y) = 0.85$, $\\text{Cov}(X,Y) = 0.0275$.
+
+We need $\\text{Var}(X)$ and $\\text{Var}(Y)$:
+
+$E(X^2) = 0^2(0.30) + 1^2(0.55) + 2^2(0.15) = 0 + 0.55 + 0.60 = 1.15$
+$\\text{Var}(X) = 1.15 - 0.85^2 = 1.15 - 0.7225 = 0.4275$
+
+$E(Y^2) = 0^2(0.35) + 1^2(0.45) + 2^2(0.20) = 0 + 0.45 + 0.80 = 1.25$
+$\\text{Var}(Y) = 1.25 - 0.7225 = 0.5275$
+
+$$\\text{Corr}(X,Y) = \\frac{0.0275}{\\sqrt{0.4275 \\times 0.5275}} = \\frac{0.0275}{\\sqrt{0.2255}} = \\frac{0.0275}{0.4749} \\approx 0.0579$$
+
+A very weak positive linear association. $X$ and $Y$ are dependent (check: $f(0,0) = 0.10 \\neq f_X(0)f_Y(0) = 0.30 \\times 0.35 = 0.105$), but dependence is nearly undetectable by correlation.`},
+
+{ch:"ch5",chLabel:"Ch 5: Continuous Distributions",id:62,title:"Max of Independent Exponentials",
+text:`Two components have independent lifetimes $X_1 \\sim \\text{Exp}(1)$ and $X_2 \\sim \\text{Exp}(2)$. The system works until BOTH components fail. Find the CDF and expected value of the system lifetime $M = \\max(X_1, X_2)$.`,
+tags:["Exponential","max","CDF technique"],trap:true,
+sol:`The CDF of the max:
+$$F_M(t) = P(\\max(X_1,X_2) \\leq t) = P(X_1 \\leq t)P(X_2 \\leq t) = (1-e^{-t})(1-e^{-2t})$$
+
+TRAP: unlike the minimum, the max of Exponentials is NOT Exponential. The CDF is a product of CDFs (not survival functions).
+
+$$F_M(t) = 1 - e^{-t} - e^{-2t} + e^{-3t}$$
+
+Differentiate for pdf: $f_M(t) = e^{-t} + 2e^{-2t} - 3e^{-3t}$ for $t > 0$.
+
+Expected value:
+$$E(M) = \\int_0^{\\infty}[1 - F_M(t)]\\,dt = \\int_0^{\\infty}(e^{-t} + e^{-2t} - e^{-3t})\\,dt$$
+$$= 1 + \\frac{1}{2} - \\frac{1}{3} = \\frac{7}{6} \\approx 1.167$$
+
+(used the tail expectation formula: $E(M) = \\int_0^{\\infty} P(M > t)\\,dt$).`},
+
+{ch:"ch5",chLabel:"Ch 5: Continuous Distributions",id:63,title:"Hazard / Failure Rate Function",
+text:`The lifetime $X$ of a device has pdf $f(x) = 2x$ for $0 \\leq x \\leq 1$. Find the hazard rate function $h(x)$ and interpret whether the device exhibits "aging."`,
+tags:["hazard rate","failure rate"],
+sol:`CDF: $F(x) = \\int_0^x 2t\\,dt = x^2$ for $0 \\leq x \\leq 1$.
+
+Survival: $\\bar{F}(x) = 1 - x^2$.
+
+Hazard rate:
+$$h(x) = \\frac{f(x)}{1 - F(x)} = \\frac{2x}{1 - x^2} \\quad \\text{for } 0 < x < 1$$
+
+As $x$ increases from 0 to 1, $h(x)$ increases (it goes from 0 toward $\\infty$). This means the device exhibits aging: the older it gets, the more likely it is to fail in the next instant. This is an Increasing Failure Rate (IFR) distribution.
+
+Contrast with $\\text{Exp}(\\lambda)$: $h(x) = \\lambda$ (constant). The Exponential is the ONLY continuous distribution with constant hazard rate, which is why it is called the "no-aging" or "memoryless" distribution.`},
+
+{ch:"ch5",chLabel:"Ch 5: Continuous Distributions",id:64,title:"Percentiles and Quantiles",
+text:`The lifetime $X \\sim \\text{Exp}(0.5)$ (in years). Find the median lifetime and the 90th percentile.`,
+tags:["percentiles","quantiles","Exponential"],
+sol:`CDF: $F(x) = 1 - e^{-0.5x}$ for $x \\geq 0$.
+
+Median $x_{0.5}$: solve $F(x) = 0.5$:
+$$1 - e^{-0.5x} = 0.5 \\implies e^{-0.5x} = 0.5 \\implies x = -\\frac{\\ln(0.5)}{0.5} = \\frac{\\ln 2}{0.5} = 2\\ln 2 \\approx 1.386 \\text{ years}$$
+
+90th percentile $x_{0.9}$: solve $F(x) = 0.9$:
+$$1 - e^{-0.5x} = 0.9 \\implies e^{-0.5x} = 0.1 \\implies x = -\\frac{\\ln(0.1)}{0.5} = \\frac{\\ln 10}{0.5} = 2\\ln 10 \\approx 4.605 \\text{ years}$$
+
+Note: the mean is $1/\\lambda = 2$ years, which exceeds the median ($1.386$). For the Exponential, the mean always exceeds the median because of the right skew. In general, $x_p = -\\ln(1-p)/\\lambda$ for Exponential quantiles.`},
+
+// ===================== PHASE 1: TEXTBOOK ADDITIONS (Ch 1-3) =====================
+
+// ===== CH 1 TEXTBOOK ADDITIONS =====
+{ch:"ch1",chLabel:"Ch 1: Counting & Probability",id:65,title:"Sampling Framework Classification",
+text:`For each scenario, identify the correct counting model (ordered/unordered, with/without replacement) and compute:
+<p>(a) A 3-character password from {A,B,C,D,E} where characters may repeat.</p>
+<p>(b) A committee of 3 chosen from 8 people.</p>
+<p>(c) Assign gold, silver, bronze medals to 3 of 8 runners.</p>
+<p>(d) Distribute 10 identical candies among 4 children (no restrictions).</p>`,
+tags:["counting","framework"],
+sol:`The four fundamental counting models:
+
+<p>(a) Ordered, with replacement: each position independently picks from 5. Answer: $5^3 = 125$.</p>
+
+<p>(b) Unordered, without replacement: subsets of size 3 from 8. Answer: $\\binom{8}{3} = 56$.</p>
+
+<p>(c) Ordered, without replacement: permutations of 3 from 8. Answer: $8^{(3)} = 8 \\times 7 \\times 6 = 336$.</p>
+
+<p>(d) Identical objects into distinct bins (stars and bars): Answer: $\\binom{10+4-1}{4-1} = \\binom{13}{3} = 286$.</p>
+
+Decision matrix: (1) Are the items distinguishable from each other? (2) Does order/position matter? This determines $n^k$ vs $n^{(k)}$ vs $\\binom{n}{k}$ vs stars-and-bars. Always classify before counting.`},
+
+{ch:"ch1",chLabel:"Ch 1: Counting & Probability",id:66,title:"Drawing Digits in Increasing Order",
+text:`Three digits are randomly selected from $\\{0, 1, 2, \\ldots, 9\\}$. Find the probability that the digits are drawn in strictly increasing order (1st $<$ 2nd $<$ 3rd) if:
+<p>(a) draws are made without replacement.</p>
+<p>(b) draws are made with replacement.</p>`,
+tags:["counting","with vs without replacement"],trap:true,
+sol:`(a) Without replacement: sample space has $10^{(3)} = 720$ ordered triples. Any 3-element subset produces $3! = 6$ orderings, exactly 1 increasing. There are $\\binom{10}{3} = 120$ such subsets.
+
+$$P = \\frac{120}{720} = \\frac{1}{6}$$
+
+By symmetry: given 3 distinct digits, each of $3!$ orderings is equally likely, so $P = 1/3! = 1/6$.
+
+(b) With replacement: sample space has $10^3 = 1000$ outcomes. Strictly increasing forces distinct digits, so the favorable count is still $\\binom{10}{3} = 120$.
+
+$$P = \\frac{120}{1000} = \\frac{3}{25}$$
+
+TRAP: the numerator stays 120 in both parts (strictly increasing = distinct), but the denominator changes from 720 to 1000. With replacement adds repeated-digit outcomes to the sample space that can never be increasing, diluting the probability.`},
+
+{ch:"ch1",chLabel:"Ch 1: Counting & Probability",id:67,title:"Passengers Getting Off at Stops",
+text:`There are 5 stops remaining on a subway line and 4 passengers. Each passenger independently chooses a stop uniformly at random. What is the probability that exactly two passengers get off at one stop and exactly two at another (a "2-2 split")?`,
+tags:["counting","multinomial partition"],
+sol:`Total outcomes: $5^4 = 625$.
+
+For the 2-2 split:
+
+<p class="step">Choose which 2 of the 5 stops are used: $\\binom{5}{2} = 10$.</p>
+<p class="step">Choose which 2 of the 4 passengers go to the first stop: $\\binom{4}{2} = 6$. The other 2 go to the second.</p>
+
+Favorable: $10 \\times 6 = 60$.
+
+$$P = \\frac{60}{625} = \\frac{12}{125} = 0.096$$
+
+Common error: dividing by $2!$ because "the two stops seem symmetric." But they are distinguishable locations (stop 2 vs stop 4). The $\\binom{5}{2}$ already selects an unordered pair of stops.`},
+
+{ch:"ch1",chLabel:"Ch 1: Counting & Probability",id:68,title:"Compound Constraints Without Replacement",
+text:`A 4-digit number is formed by randomly selecting four digits from $\\{1, 2, 3, 4, 5, 6, 7\\}$ without replacement. Find the probability the number formed is an even number greater than 3000.`,
+tags:["counting","overlapping constraints"],trap:true,
+sol:`Sample space: $7^{(4)} = 840$.
+
+Constraints: first digit $\\geq 3$ (for $> 3000$) AND last digit is even (2, 4, or 6).
+
+TRAP: digits 4 and 6 satisfy both constraints, creating overlap. Case-split on the last digit:
+
+Case A: Last digit $= 2$ (even but $< 3$, no conflict with first digit).
+<p class="step">First digit: 5 choices from $\\{3,4,5,6,7\\}$. Middle two: $5 \\times 4 = 20$. Total: $100$.</p>
+
+Case B: Last digit $= 4$ (even AND $\\geq 3$, competes with first digit).
+<p class="step">First digit: 4 choices from $\\{3,5,6,7\\}$. Middle two: $5 \\times 4 = 20$. Total: $80$.</p>
+
+Case C: Last digit $= 6$ (same overlap as Case B).
+<p class="step">First digit: 4 choices from $\\{3,4,5,7\\}$. Total: $80$.</p>
+
+Favorable: $100 + 80 + 80 = 260$.
+
+$$P = \\frac{260}{840} = \\frac{13}{42}$$
+
+Key technique: when two positional constraints share candidate values, case-split on the overlap rather than naively multiplying.`},
+
+// ===== CH 2 TEXTBOOK ADDITIONS =====
+{ch:"ch2",chLabel:"Ch 2: Conditional Probability",id:69,title:"Three-Event Inclusion-Exclusion: Exactly k",
+text:`In a class of 200 students: 120 study math (M), 90 study physics (P), 70 study chemistry (C). Also, 50 study both M and P, 40 study both M and C, 30 study both P and C, and 20 study all three. Find:
+<p>(a) $P$(student studies at least one subject)</p>
+<p>(b) $P$(exactly two subjects)</p>
+<p>(c) $P$(exactly one subject)</p>`,
+tags:["inclusion-exclusion","exactly k events"],
+sol:`(a) By Rule 4b:
+$$P(M \\cup P \\cup C) = \\frac{120 + 90 + 70 - 50 - 40 - 30 + 20}{200} = \\frac{180}{200} = 0.9$$
+
+For parts (b) and (c), decompose into Venn diagram regions.
+
+"Exactly two" (in two events but not the third):
+<p class="step">$|MP \\text{ only}| = 50 - 20 = 30$</p>
+<p class="step">$|MC \\text{ only}| = 40 - 20 = 20$</p>
+<p class="step">$|PC \\text{ only}| = 30 - 20 = 10$</p>
+
+(b) $P(\\text{exactly two}) = \\frac{30+20+10}{200} = \\frac{60}{200} = 0.3$
+
+"Exactly one" regions (subtract double-counted pairwise, add back triple):
+<p class="step">$|M \\text{ only}| = 120 - 50 - 40 + 20 = 50$</p>
+<p class="step">$|P \\text{ only}| = 90 - 50 - 30 + 20 = 30$</p>
+<p class="step">$|C \\text{ only}| = 70 - 40 - 30 + 20 = 20$</p>
+
+(c) $P(\\text{exactly one}) = \\frac{50+30+20}{200} = 0.5$
+
+Consistency: $0.5 + 0.3 + 0.1 = 0.9 = P(\\text{at least one})$. \\checkmark`},
+
+{ch:"ch2",chLabel:"Ch 2: Conditional Probability",id:70,title:"Best-of-Seven Series",
+text:`Two teams play a best-of-seven series (first to 4 wins). Team A wins each game independently with probability 0.6. Find:
+<p>(a) $P$(A wins the series in exactly 6 games)</p>
+<p>(b) $P$(the series goes to 7 games)</p>
+<p>(c) $P$(A wins the series)</p>`,
+tags:["independence","Negative Binomial structure"],
+sol:`(a) A wins in 6: exactly 3 A-wins in the first 5 games, then A wins game 6 (NB structure):
+
+$$P = \\binom{5}{3}(0.6)^3(0.4)^2 \\times 0.6 = 10(0.6)^4(0.4)^2 = 10(0.1296)(0.16) = 0.20736$$
+
+(b) Series reaches game 7: the score is 3-3 after 6 games:
+
+$$P(\\text{7 games}) = \\binom{6}{3}(0.6)^3(0.4)^3 = 20(0.216)(0.064) = 0.27648$$
+
+(c) Sum over all possible series lengths (A wins in 4, 5, 6, or 7):
+
+<p class="step">In 4: $(0.6)^4 = 0.1296$</p>
+<p class="step">In 5: $\\binom{4}{3}(0.6)^4(0.4) = 0.20736$</p>
+<p class="step">In 6: $0.20736$ (part a)</p>
+<p class="step">In 7: $0.27648 \\times 0.6 = 0.16589$</p>
+
+$$P(\\text{A wins}) = 0.1296 + 0.2074 + 0.2074 + 0.1659 = 0.7103$$
+
+A 60% per-game edge becomes a 71% series edge. The longer format amplifies the stronger team's advantage.`},
+
+{ch:"ch2",chLabel:"Ch 2: Conditional Probability",id:71,title:"Bayesian Updating with Repeated Evidence",
+text:`A box contains 4 coins: 3 fair ($P(H)=0.5$) and 1 biased ($P(H)=0.8$). A coin is picked at random and tossed 6 times, showing 5 heads. Find the probability the selected coin is the biased one.`,
+tags:["Bayes","repeated trials","updating"],
+sol:`Let $B$ = biased coin, $D$ = 5H in 6 tosses. Prior: $P(B) = 1/4$.
+
+Likelihoods via Binomial PMF:
+<p class="step">$P(D|B) = \\binom{6}{5}(0.8)^5(0.2)^1 = 6(0.32768)(0.2) = 0.39322$</p>
+<p class="step">$P(D|B^c) = \\binom{6}{5}(0.5)^6 = 6/64 = 0.09375$</p>
+
+Total probability:
+$$P(D) = 0.39322(1/4) + 0.09375(3/4) = 0.09830 + 0.07031 = 0.16862$$
+
+Bayes' theorem:
+$$P(B|D) = \\frac{0.09830}{0.16862} \\approx 0.5830$$
+
+The data (5/6 heads) shifts the posterior from 0.25 to 0.58. The likelihood ratio $P(D|B)/P(D|B^c) = 0.393/0.094 \\approx 4.19$ measures how much more strongly the biased coin explains the evidence. This is the core engine of Bayesian inference.`},
+
+{ch:"ch2",chLabel:"Ch 2: Conditional Probability",id:72,title:"Conditional Independence in Classification",
+text:`An email is spam with probability 0.5. Two features $A_1$, $A_2$ are checked. Given spam status, they are conditionally independent with:
+<p>$P(A_1|\\text{Spam}) = 0.2$, $P(A_2|\\text{Spam}) = 0.1$</p>
+<p>$P(A_1|\\text{Regular}) = 0.005$, $P(A_2|\\text{Regular}) = 0.004$</p>
+<p>Find $P(\\text{Spam} \\mid A_1 \\cap A_2)$. Are $A_1$ and $A_2$ (unconditionally) independent?</p>`,
+tags:["Bayes","conditional independence","Naive Bayes"],
+sol:`Using conditional independence:
+
+$P(A_1 A_2|\\text{Spam}) = (0.2)(0.1) = 0.02$
+
+$P(A_1 A_2|\\text{Reg}) = (0.005)(0.004) = 0.00002$
+
+Total probability: $P(A_1 A_2) = 0.02(0.5) + 0.00002(0.5) = 0.01001$
+
+Bayes: $P(\\text{Spam}|A_1 A_2) = \\frac{0.01}{0.01001} \\approx 0.999$
+
+Two features that are each individually somewhat indicative become overwhelming in combination. The likelihood ratio is $0.02/0.00002 = 1000$. This is the Naive Bayes classifier principle.
+
+Are $A_1, A_2$ unconditionally independent? NO. We can check:
+<p class="step">$P(A_1) = 0.2(0.5) + 0.005(0.5) = 0.1025$</p>
+<p class="step">$P(A_2) = 0.1(0.5) + 0.004(0.5) = 0.052$</p>
+<p class="step">$P(A_1)P(A_2) = 0.00533 \\neq P(A_1 A_2) = 0.01001$</p>
+
+Conditional independence does NOT imply unconditional independence. The common cause (spam status) induces marginal dependence between the features.`},
+
+// ===== CH 3 TEXTBOOK ADDITIONS =====
+{ch:"ch3",chLabel:"Ch 3: Discrete Distributions",id:73,title:"Optimal Question Ordering",
+text:`A contestant has two questions: A ($\\$100$ prize) and B ($\\$200$ prize). She chooses which to attempt first but must answer the first correctly before attempting the second. She knows A with probability 0.8 and B with probability 0.6, independently.
+<p>(a) Which should she attempt first to maximize expected winnings?</p>
+<p>(b) A $\\$50$ penalty now applies if the first question is wrong. Does the optimal strategy change?</p>`,
+tags:["expected value","decision optimization"],
+sol:`(a) Strategy "A first":
+<p class="step">From A: $0.8 \\times 100 = 80$</p>
+<p class="step">From B (requires A correct): $0.8 \\times 0.6 \\times 200 = 96$</p>
+<p class="step">$E(\\text{A first}) = 80 + 96 = 176$</p>
+
+Strategy "B first":
+<p class="step">From B: $0.6 \\times 200 = 120$</p>
+<p class="step">From A (requires B correct): $0.6 \\times 0.8 \\times 100 = 48$</p>
+<p class="step">$E(\\text{B first}) = 120 + 48 = 168$</p>
+
+Attempt A first ($176 > 168$). Intuition: start with the question you are more likely to know, since it "unlocks" the second question more often.
+
+(b) With penalty:
+<p class="step">A first: $176 - 50(0.2) = 166$</p>
+<p class="step">B first: $168 - 50(0.4) = 148$</p>
+
+Still A first ($166 > 148$). The penalty amplifies the advantage of starting with the higher-probability question.`},
+
+{ch:"ch3",chLabel:"Ch 3: Discrete Distributions",id:74,title:"Geometric Distribution: Divisibility and Remainders",
+text:`Let $X \\sim \\text{Geo}(p)$ where $X$ counts failures before the first success ($X \\in \\{0,1,2,\\ldots\\}$).
+<p>(a) Find $P(X \\text{ is odd})$.</p>
+<p>(b) Find $P(X \\text{ is divisible by 3})$.</p>
+<p>(c) Find the PMF of $R = X \\pmod{4}$.</p>`,
+tags:["Geometric","series manipulation"],
+sol:`Let $q = 1 - p$.
+
+(a) $$P(X \\text{ odd}) = \\sum_{k=0}^{\\infty} P(X=2k+1) = \\sum_{k=0}^{\\infty} q^{2k+1}p = pq\\sum_{k=0}^{\\infty}(q^2)^k = \\frac{pq}{1-q^2} = \\frac{pq}{p(1+q)} = \\frac{q}{1+q}$$
+
+Sanity: if $p = 1/2$, then $P = (1/2)/(3/2) = 1/3$. The values 1,3,5,... have probabilities $1/4, 1/16, ...$, summing to $1/3$. \\checkmark
+
+(b) $$P(X \\text{ div by 3}) = \\sum_{k=0}^{\\infty} q^{3k}p = \\frac{p}{1-q^3}$$
+
+(c) For $r \\in \\{0,1,2,3\\}$:
+$$P(R = r) = \\sum_{k=0}^{\\infty} q^{4k+r}p = \\frac{pq^r}{1-q^4}$$
+
+Check: $\\sum_{r=0}^{3} \\frac{pq^r}{1-q^4} = \\frac{p(1+q+q^2+q^3)}{1-q^4} = \\frac{p}{1-q} = 1$. \\checkmark
+
+Key technique: pull out $q^r$ (the non-periodic part), sum the periodic factor as a geometric series in $q^{\\text{period}}$.`},
+
+{ch:"ch3",chLabel:"Ch 3: Discrete Distributions",id:75,title:"Game Winnings via Stopping Rule",
+text:`A box contains 7 balls: 2 blue and 5 yellow. A player pays $\\$9$ entry and draws balls without replacement until the 2nd (last) blue ball is found. For every draw, the player receives $\\$2$. Find the PMF of the number of draws $X$, the expected net winnings, and $P$(player profits).`,
+tags:["stopping rule","Negative Hypergeometric"],
+sol:`$X$ = position of the 2nd blue ball in a random arrangement of 7. Range: $\\{2,3,4,5,6,7\\}$.
+
+Think of $\\binom{7}{2} = 21$ equally likely positions for the 2 blue balls. For the last blue at position $x$, the other blue must be at some position $j < x$: there are $x-1$ choices.
+
+$$P(X = x) = \\frac{x-1}{21} \\quad x = 2,3,4,5,6,7$$
+
+Net winnings $W = 2X - 9$:
+
+$$E(X) = \\frac{1}{21}\\sum_{x=2}^{7} x(x-1) = \\frac{2+6+12+20+30+42}{21} = \\frac{112}{21} = \\frac{16}{3}$$
+
+$$E(W) = \\frac{32}{3} - 9 = \\frac{5}{3} \\approx \\$1.67$$
+
+$$P(\\text{profit}) = P(W > 0) = P(X \\geq 5) = \\frac{4+5+6}{21} = \\frac{5}{7} \\approx 0.714$$
+
+The game slightly favors the player, who profits about 71% of the time.`},
+
+{ch:"ch3",chLabel:"Ch 3: Discrete Distributions",id:76,title:"MGF Inversion via Geometric Series",
+text:`A random variable $Y$ has MGF $M_Y(t) = \\frac{2}{3 - e^t}$ for $t < \\ln 3$. Determine the PMF of $Y$ and identify the distribution.`,
+tags:["MGF","geometric series","distribution identification"],
+sol:`Rewrite to expose a geometric series:
+$$M_Y(t) = \\frac{2}{3-e^t} = \\frac{2/3}{1 - e^t/3}$$
+
+For $|e^t/3| < 1$ (i.e., $t < \\ln 3$), expand:
+$$= \\frac{2}{3}\\sum_{y=0}^{\\infty}\\left(\\frac{e^t}{3}\\right)^y = \\sum_{y=0}^{\\infty} \\frac{2}{3^{y+1}} e^{ty}$$
+
+Since $M_Y(t) = \\sum_y e^{ty} P(Y=y)$, match coefficients:
+
+$$P(Y = y) = \\frac{2}{3^{y+1}} = \\frac{2}{3}\\left(\\frac{1}{3}\\right)^y \\quad y = 0,1,2,\\ldots$$
+
+This is $Y \\sim \\text{Geo}(2/3)$.
+
+Verification: $E(Y) = M'(0)$. $M'(t) = \\frac{2e^t}{(3-e^t)^2}$, so $E(Y) = 2/4 = 1/2 = (1-p)/p = (1/3)/(2/3)$. \\checkmark
+
+Technique: expand the MGF as $\\sum c_y e^{ty}$ and read off $P(Y=y) = c_y$. This works by the uniqueness theorem (Theorem 3.4.1).`},
+
+{ch:"ch3",chLabel:"Ch 3: Discrete Distributions",id:77,title:"Poisson Process: Conditions and Setup",
+text:`For each scenario, determine whether a Poisson process model is appropriate and identify which of the three conditions (independence, individuality, homogeneity) may be violated:
+<p>(a) Radioactive emissions: independent, occur singly, constant rate 5/sec.</p>
+<p>(b) Store customers arrive in groups of 2-3 during a sale, groups at constant rate.</p>
+<p>(c) Earthquakes at rate 2/year, but a major quake triggers aftershocks.</p>
+<p>(d) For (a), find $P(X \\geq 3)$ where $X$ counts emissions in 2 seconds.</p>`,
+tags:["Poisson process","model assumptions"],
+sol:`Three conditions: (1) Independence (non-overlapping intervals), (2) Individuality (events occur singly), (3) Homogeneity (constant rate).
+
+<p>(a) YES: all three conditions satisfied. $X(t) \\sim \\text{Poi}(5t)$.</p>
+
+<p>(b) NO: individuality violated. Customers arrive in clusters of 2-3, not singly. The number of groups could follow a Poisson process, but individual arrivals do not.</p>
+
+<p>(c) NO: independence violated. A major quake triggers aftershocks, so an event in one interval increases the rate in nearby intervals.</p>
+
+(d) $X \\sim \\text{Poi}(5 \\times 2) = \\text{Poi}(10)$.
+
+$$P(X \\geq 3) = 1 - P(X=0) - P(X=1) - P(X=2) = 1 - e^{-10}\\left(1 + 10 + 50\\right) = 1 - 61e^{-10} \\approx 0.9972$$
+
+With rate 10 in 2 seconds, fewer than 3 events is extremely rare.`},
+
+{ch:"ch3",chLabel:"Ch 3: Discrete Distributions",id:78,title:"Cumulant Generating Function Shortcut",
+text:`Let $M(t)$ be the MGF of $X$. Define the cumulant generating function $C(t) = \\ln M(t)$.
+<p>(a) Show that $C'(0) = E(X)$ and $C''(0) = \\text{Var}(X)$.</p>
+<p>(b) Use this to find $E(X)$ and $\\text{Var}(X)$ for $X \\sim \\text{Poi}(\\mu)$, whose MGF is $M(t) = e^{\\mu(e^t - 1)}$.</p>`,
+tags:["MGF","cumulant","variance shortcut"],
+sol:`(a) Differentiate $C(t) = \\ln M(t)$:
+
+$$C'(t) = \\frac{M'(t)}{M(t)} \\implies C'(0) = \\frac{M'(0)}{M(0)} = \\frac{E(X)}{1} = E(X)$$
+
+since $M(0) = 1$ always.
+
+$$C''(t) = \\frac{M''(t)M(t) - [M'(t)]^2}{[M(t)]^2}$$
+
+$$C''(0) = M''(0) - [M'(0)]^2 = E(X^2) - [E(X)]^2 = \\text{Var}(X)$$
+
+(b) For Poi$(\\mu)$: $C(t) = \\ln(e^{\\mu(e^t-1)}) = \\mu(e^t - 1)$.
+
+$$C'(t) = \\mu e^t \\implies C'(0) = \\mu = E(X)$$
+$$C''(t) = \\mu e^t \\implies C''(0) = \\mu = \\text{Var}(X)$$
+
+The CGF gives both mean and variance in two lines, bypassing the tedious product/chain rule needed to differentiate $M(t)$ directly. This shortcut is especially powerful for distributions whose MGF has a complex form but whose log simplifies nicely (Poisson, Binomial, Normal).`},
+
+// ===================== PHASE 2: ALL REMAINING GAPS =====================
+
+// ===== CH 1 PHASE 2 =====
+{ch:"ch1",chLabel:"Ch 1: Counting & Probability",id:79,title:"Odds and Probability Conversion",
+text:`A weather model gives 3:2 odds in favor of rain tomorrow.
+<p>(a) What is $P(\\text{rain})$?</p>
+<p>(b) If $P(\\text{snow}) = 0.1$, what are the odds against snow?</p>
+<p>(c) A bet pays 5:1 against. If the true probability of winning is 0.25, is this a good bet?</p>`,
+tags:["odds","probability conversion"],
+sol:`(a) Odds $a:b$ in favor means $P = a/(a+b)$.
+
+$$P(\\text{rain}) = \\frac{3}{3+2} = \\frac{3}{5} = 0.6$$
+
+(b) Odds against = $P(\\text{no snow}) : P(\\text{snow}) = 0.9 : 0.1 = 9:1$ against snow.
+
+(c) Odds 5:1 against means the implied breakeven probability is $1/(5+1) = 1/6 \\approx 0.167$. Your true probability of winning is 0.25, which exceeds the breakeven, so the expected payout is positive. Specifically: $E = 0.25(5) - 0.75(1) = 1.25 - 0.75 = 0.50 > 0$. Yes, this is a favorable bet.
+
+Conversion formulas: odds $a:b$ in favor $\\iff P = a/(a+b) \\iff$ odds $= P/(1-P)$.`},
+
+{ch:"ch1",chLabel:"Ch 1: Counting & Probability",id:80,title:"Stirling's Formula for Large Factorials",
+text:`Stirling's approximation: $n! \\approx \\sqrt{2\\pi n}\\,(n/e)^n$.
+<p>(a) Use it to approximate $\\binom{100}{50}$.</p>
+<p>(b) Show that $\\binom{2n}{n} \\approx \\frac{4^n}{\\sqrt{\\pi n}}$ for large $n$.</p>`,
+tags:["Stirling","large factorials","approximation"],
+sol:`(a) $\\binom{100}{50} = \\frac{100!}{(50!)^2}$.
+
+Apply Stirling to each factorial:
+
+$$\\frac{\\sqrt{2\\pi(100)}(100/e)^{100}}{[\\sqrt{2\\pi(50)}(50/e)^{50}]^2} = \\frac{\\sqrt{200\\pi} \\cdot 100^{100}/e^{100}}{2\\pi(50) \\cdot 50^{100}/e^{100}}$$
+
+$$= \\frac{\\sqrt{200\\pi} \\cdot 2^{100}}{100\\pi} = \\frac{2^{100}}{\\sqrt{50\\pi}} \\approx \\frac{1.268 \\times 10^{30}}{12.533} \\approx 1.012 \\times 10^{29}$$
+
+Exact value: $\\binom{100}{50} \\approx 1.009 \\times 10^{29}$. Error $< 1\\%$.
+
+(b) Same approach with general $n$:
+
+$$\\binom{2n}{n} = \\frac{(2n)!}{(n!)^2} \\approx \\frac{\\sqrt{4\\pi n}(2n/e)^{2n}}{2\\pi n(n/e)^{2n}} = \\frac{\\sqrt{4\\pi n} \\cdot 2^{2n}}{2\\pi n} = \\frac{4^n}{\\sqrt{\\pi n}}$$
+
+This shows that the central binomial coefficient grows exponentially as $4^n$ but is dampened by $1/\\sqrt{\\pi n}$.`},
+
+// ===== CH 2 PHASE 2 =====
+{ch:"ch2",chLabel:"Ch 2: Conditional Probability",id:81,title:"Randomized Response Technique",
+text:`To estimate what fraction of students have cheated on an exam, a researcher uses the randomized response method: each student secretly flips a coin. If heads, answer "yes" regardless of truth. If tails, answer truthfully. In a survey of 400 students, 280 answered "yes."
+<p>(a) Set up the probability model and estimate the true proportion $p$ of cheaters.</p>
+<p>(b) Why does this protect privacy?</p>`,
+tags:["conditional probability","randomized response"],
+sol:`(a) Let $Y$ = "yes" answer. By the law of total probability:
+
+$$P(Y) = P(Y|H)P(H) + P(Y|T)P(T) = 1 \\cdot 0.5 + p \\cdot 0.5 = 0.5 + 0.5p$$
+
+We observe $\\hat{P}(Y) = 280/400 = 0.70$.
+
+$$0.70 = 0.5 + 0.5p \\implies p = \\frac{0.70 - 0.50}{0.50} = 0.40$$
+
+An estimated 40% of students have cheated.
+
+(b) Privacy protection: even if a student answers "yes," the researcher cannot tell whether this is because the coin landed heads (forced "yes") or because the student is actually a cheater. Any individual "yes" has plausible deniability. The coin flip injects calibrated noise that masks individual truth while allowing population-level estimation.
+
+This is an early form of differential privacy. The key insight is that the noise mechanism ($P(\\text{coin}) = 0.5$) is known, so the researcher can "subtract off" its effect from the aggregate.`},
+
+// ===== CH 3 PHASE 2 =====
+{ch:"ch3",chLabel:"Ch 3: Discrete Distributions",id:82,title:"Discrete CDF: Step Function and PMF Recovery",
+text:`The CDF of a discrete random variable $X$ is:
+$$F(x) = \\begin{cases} 0 & x < 1 \\\\ 0.2 & 1 \\leq x < 3 \\\\ 0.5 & 3 \\leq x < 5 \\\\ 0.85 & 5 \\leq x < 7 \\\\ 1.0 & x \\geq 7 \\end{cases}$$
+<p>(a) Find the PMF of $X$.</p>
+<p>(b) Find $P(2 < X \\leq 5)$ and $P(X > 3)$.</p>`,
+tags:["CDF","step function","PMF recovery"],trap:true,
+sol:`(a) For a discrete CDF, the probability mass at each jump point equals the jump size:
+
+<p class="step">$P(X = 1) = F(1) - F(1^-) = 0.2 - 0 = 0.2$</p>
+<p class="step">$P(X = 3) = F(3) - F(3^-) = 0.5 - 0.2 = 0.3$</p>
+<p class="step">$P(X = 5) = F(5) - F(5^-) = 0.85 - 0.5 = 0.35$</p>
+<p class="step">$P(X = 7) = F(7) - F(7^-) = 1.0 - 0.85 = 0.15$</p>
+
+Check: $0.2 + 0.3 + 0.35 + 0.15 = 1$. &#10003;
+
+(b) TRAP: careful with inequality directions!
+
+$P(2 < X \\leq 5) = F(5) - F(2) = 0.85 - 0.2 = 0.65$
+
+Note $F(2) = 0.2$ (not a jump point, so $F(2) = F(1) = 0.2$).
+
+$P(X > 3) = 1 - P(X \\leq 3) = 1 - F(3) = 1 - 0.5 = 0.5$
+
+TRAP: $P(X > 3) \\neq P(X \\geq 3)$ for discrete RVs. $P(X \\geq 3) = 1 - F(3^-) = 1 - 0.2 = 0.8$. The difference is $P(X = 3) = 0.3$.`},
+
+{ch:"ch3",chLabel:"Ch 3: Discrete Distributions",id:83,title:"Memoryless Property of the Geometric Distribution",
+text:`Let $X \\sim \\text{Geo}(p)$ (counting trials until first success, $X \\in \\{1,2,3,\\ldots\\}$).
+<p>(a) Prove $P(X > s + t \\mid X > s) = P(X > t)$ for non-negative integers $s, t$.</p>
+<p>(b) A die is rolled repeatedly. Given that no 6 has appeared in the first 10 rolls, what is $P(\\text{first 6 on roll 15 or later})$?</p>`,
+tags:["Geometric","memoryless property"],
+sol:`(a) $P(X > k) = (1-p)^k$ for the geometric (probability of $k$ consecutive failures).
+
+$$P(X > s+t \\mid X > s) = \\frac{P(X > s+t)}{P(X > s)} = \\frac{(1-p)^{s+t}}{(1-p)^s} = (1-p)^t = P(X > t)$$
+
+The process "resets" at any point, regardless of how many failures have occurred. This is the discrete analog of the Exponential's memoryless property.
+
+(b) First 6 is Geo($1/6$). Given no 6 in 10 rolls (i.e., $X > 10$), by memorylessness:
+
+$$P(X \\geq 15 \\mid X > 10) = P(X > 14 \\mid X > 10) = P(X > 4) = (5/6)^4 = \\frac{625}{1296} \\approx 0.482$$
+
+This is the same as asking $P(X \\geq 5)$ for a fresh sequence. The "cold streak" is irrelevant.`},
+
+// ===== CH 4 PHASE 2 =====
+{ch:"ch4",chLabel:"Ch 4: Multivariate Distributions",id:84,title:"Variance of General Linear Combinations",
+text:`$X_1, X_2, X_3$ have variances $\\text{Var}(X_1) = 4$, $\\text{Var}(X_2) = 9$, $\\text{Var}(X_3) = 16$, and covariances $\\text{Cov}(X_1, X_2) = 2$, $\\text{Cov}(X_1, X_3) = -3$, $\\text{Cov}(X_2, X_3) = 1$.
+<p>Find $\\text{Var}(2X_1 - X_2 + 3X_3)$.</p>`,
+tags:["variance","linear combination","covariance"],trap:true,
+sol:`For $W = a_1X_1 + a_2X_2 + a_3X_3$ with $a_1 = 2, a_2 = -1, a_3 = 3$:
+
+$$\\text{Var}(W) = \\sum_i a_i^2 \\text{Var}(X_i) + 2\\sum_{i<j} a_i a_j \\text{Cov}(X_i, X_j)$$
+
+Variance terms:
+<p class="step">$4(4) + 1(9) + 9(16) = 16 + 9 + 144 = 169$</p>
+
+Covariance cross-terms:
+<p class="step">$2(2)(-1)(2) = -8$</p>
+<p class="step">$2(2)(3)(-3) = -36$</p>
+<p class="step">$2(-1)(3)(1) = -6$</p>
+
+$$\\text{Var}(W) = 169 + (-8) + (-36) + (-6) = 119$$
+
+TRAP: the formula has $2 \\sum a_i a_j \\text{Cov}$. Forgetting the factor of 2, or the signs from the coefficients $a_i$, are common errors. When $a_2 = -1$, the cross-term with $X_2$ flips sign. If all variables were independent (all covariances zero), we would get 169, and the negative covariance terms reduce this.`},
+
+{ch:"ch4",chLabel:"Ch 4: Multivariate Distributions",id:85,title:"Indicator Variables: Cutting a Stick",
+text:`A stick of length 1 is cut at 2 points chosen independently and uniformly on $[0,1]$. Let $X$ = number of pieces with length $> 1/3$. Find $E(X)$.`,
+tags:["indicator variables","dependent","stick cutting"],
+sol:`Write $X = I_1 + I_2 + I_3$ where $I_k = 1$ if piece $k$ has length $> 1/3$.
+
+By symmetry, each piece has the same distribution, so $P(I_k = 1)$ is the same for all $k$.
+
+To find $P(\\text{piece } k > 1/3)$: Consider the two cut points $U_1, U_2$ on $[0,1]$. The three piece lengths sum to 1. By symmetry, each piece has mean $1/3$.
+
+For piece 1 (leftmost), its length is $\\min(U_1, U_2)$. We need $P(\\min(U_1,U_2) > 1/3) = P(U_1 > 1/3, U_2 > 1/3) = (2/3)^2 = 4/9$.
+
+By symmetry, each piece has $P(\\text{length} > 1/3) = 4/9$.
+
+$$E(X) = 3 \\times \\frac{4}{9} = \\frac{4}{3} \\approx 1.333$$
+
+Note: the indicators $I_1, I_2, I_3$ are NOT independent (if two pieces are long, the third must be short). But linearity of expectation does NOT require independence: $E(X) = E(I_1) + E(I_2) + E(I_3)$ always holds.`},
+
+{ch:"ch4",chLabel:"Ch 4: Multivariate Distributions",id:86,title:"Markov's Inequality: Direct Application",
+text:`An insurance company's daily claims $X$ have $E(X) = \\$50{,}000$.
+<p>(a) Using only this information, bound $P(X \\geq \\$200{,}000)$.</p>
+<p>(b) If also $\\text{Var}(X) = (\\$30{,}000)^2$, bound $P(X \\geq \\$200{,}000)$ using Chebyshev.</p>
+<p>(c) Compare the two bounds and discuss when each is useful.</p>`,
+tags:["Markov","Chebyshev","comparison"],
+sol:`(a) Markov's inequality (requires only $X \\geq 0$ and $E(X)$):
+
+$$P(X \\geq 200{,}000) \\leq \\frac{E(X)}{200{,}000} = \\frac{50{,}000}{200{,}000} = 0.25$$
+
+(b) Chebyshev (requires $E(X)$ and $\\text{Var}(X)$):
+
+$$P(X \\geq 200{,}000) \\leq P(|X - 50{,}000| \\geq 150{,}000) \\leq \\frac{(30{,}000)^2}{(150{,}000)^2} = \\frac{1}{25} = 0.04$$
+
+(c) Chebyshev gives a much tighter bound (4% vs 25%) because it uses the additional variance information. Markov is a one-moment bound (uses only $E(X)$), Chebyshev is a two-moment bound (uses $E(X)$ and $\\text{Var}(X)$).
+
+Markov is useful when you know only the mean, or when the variable is clearly non-negative. Chebyshev sharpens the bound whenever you also know the variance. Neither requires knowledge of the distribution's shape.`},
+
+{ch:"ch4",chLabel:"Ch 4: Multivariate Distributions",id:87,title:"Finding a Parameter for Zero Correlation",
+text:`Let $(X, Y)$ have joint pdf $f(x,y) = cx^2y$ for $0 \\leq x \\leq 1$, $0 \\leq y \\leq 1$. Define $W = X + cY$ for some constant $c$.
+<p>(a) Are $X$ and $Y$ independent?</p>
+<p>(b) Find $\\text{Cov}(X, W)$ and determine the value of $c$ that makes $X$ and $W$ uncorrelated.</p>`,
+tags:["correlation","parameter tuning","independence"],
+sol:`(a) Check if $f(x,y) = f_X(x) \\cdot f_Y(y)$:
+
+$f_X(x) = \\int_0^1 cx^2y\\,dy = cx^2/2$. Normalize: $\\int_0^1 cx^2/2\\,dx = c/6 = 1$, so $c = 6$.
+
+$f_X(x) = 3x^2$, $f_Y(y) = \\int_0^1 6x^2y\\,dx = 2y$.
+
+$f_X(x) \\cdot f_Y(y) = 6x^2y = f(x,y)$. YES, $X$ and $Y$ are independent.
+
+(b) Since $X \\perp Y$: $\\text{Cov}(X,Y) = 0$.
+
+$\\text{Cov}(X, W) = \\text{Cov}(X, X + cY) = \\text{Var}(X) + c\\,\\text{Cov}(X,Y) = \\text{Var}(X) + 0 = \\text{Var}(X)$
+
+$E(X) = \\int_0^1 3x^3\\,dx = 3/4$. $E(X^2) = \\int_0^1 3x^4\\,dx = 3/5$.
+$\\text{Var}(X) = 3/5 - 9/16 = 48/80 - 45/80 = 3/80$.
+
+Since $\\text{Cov}(X, W) = 3/80 > 0$ for ALL values of $c$, there is no value of $c$ that makes $X$ and $W$ uncorrelated.
+
+This is because $W$ always contains $X$ as a component, and $\\text{Var}(X) > 0$, so $X$ and $W = X + cY$ always share positive covariance through the $X$ term. The $cY$ part is irrelevant since $X \\perp Y$.`},
+
+{ch:"ch4",chLabel:"Ch 4: Multivariate Distributions",id:88,title:"Pentapolis Bridge Problem",
+text:`Five cities form a network. Each pair of cities is independently connected by a direct road with probability $p = 0.6$. Let $X$ be the number of roads. Given that City A has exactly 2 roads, find the expected total number of roads in the network.`,
+tags:["conditional expectation","indicator decomposition"],
+sol:`There are $\\binom{5}{2} = 10$ possible roads total. Without conditioning, each exists independently with $P = 0.6$, so $X \\sim \\text{Bin}(10, 0.6)$.
+
+Partition the 10 roads into two groups:
+<p class="step">Group 1: roads touching City A. There are 4 such roads (A-B, A-C, A-D, A-E).</p>
+<p class="step">Group 2: roads NOT touching City A. There are $\\binom{4}{2} = 6$ such roads.</p>
+
+These groups are independent (each road exists independently).
+
+Given City A has exactly 2 roads: Group 1 contributes 2 roads. Group 2 is unaffected by this conditioning (independence).
+
+$E(\\text{Group 2 roads}) = 6 \\times 0.6 = 3.6$
+
+$E(X \\mid \\text{City A has 2 roads}) = 2 + 3.6 = 5.6$
+
+Compare: $E(X) = 10(0.6) = 6$. Conditioning on City A having fewer roads than average (2 vs expected 2.4) pulls the total down from 6 to 5.6, but only by the deficit in City A's own roads. The rest of the network is unaffected.`},
+
+// ===== CH 5 PHASE 2 =====
+{ch:"ch5",chLabel:"Ch 5: Continuous Distributions",id:89,title:"Probability Integral Transform (Simulation)",
+text:`Let $X$ have CDF $F(x) = 1 - e^{-x^2}$ for $x \\geq 0$.
+<p>(a) If $U \\sim U(0,1)$, find a formula for generating $X$ from $U$ (i.e., find $F^{-1}(u)$).</p>
+<p>(b) State the general principle: why does $F^{-1}(U) \\sim X$ work?</p>`,
+tags:["probability integral transform","simulation","inverse CDF"],
+sol:`(a) Set $u = F(x) = 1 - e^{-x^2}$ and solve for $x$:
+
+$$e^{-x^2} = 1 - u \\implies -x^2 = \\ln(1-u) \\implies x = \\sqrt{-\\ln(1-u)}$$
+
+So $X = F^{-1}(U) = \\sqrt{-\\ln(1-U)}$ for $U \\sim U(0,1)$.
+
+(Since $1-U \\sim U(0,1)$ as well, we can simplify: $X = \\sqrt{-\\ln U}$.)
+
+(b) The Probability Integral Transform (Theorem 5.4.1): if $F$ is a continuous CDF and $U \\sim U(0,1)$, then $X = F^{-1}(U)$ has CDF $F$.
+
+Proof: $P(F^{-1}(U) \\leq x) = P(U \\leq F(x)) = F(x)$, since $U \\sim U(0,1)$ gives $P(U \\leq t) = t$.
+
+This is the foundation of computer simulation: generate $U$ from a random number generator, then apply $F^{-1}$ to get a sample from any desired distribution. Q43 showed the special case where $-2\\ln(U) \\sim \\text{Exp}(1/2)$.`},
+
+{ch:"ch5",chLabel:"Ch 5: Continuous Distributions",id:90,title:"Monotonic Transformation Formula",
+text:`Let $X \\sim \\text{Exp}(1)$. Use the change-of-variable formula to find the pdf of $Y = \\sqrt{X}$.`,
+tags:["transformation","Jacobian","change of variable"],trap:true,
+sol:`Since $g(x) = \\sqrt{x}$ is strictly increasing on $(0, \\infty)$, the change-of-variable formula (Theorem 5.2.1) gives:
+
+$$f_Y(y) = f_X(h(y)) \\cdot |h'(y)|$$
+
+where $h = g^{-1}$ (the inverse), so $x = h(y) = y^2$.
+
+$h'(y) = 2y$, and $f_X(x) = e^{-x}$ for $x > 0$.
+
+$$f_Y(y) = e^{-y^2} \\cdot 2y = 2ye^{-y^2} \\quad \\text{for } y > 0$$
+
+TRAP: do NOT forget the $|h'(y)|$ Jacobian term. Without it you get $e^{-y^2}$ (wrong). The Jacobian accounts for the "stretching" of the transformation.
+
+Check: $\\int_0^{\\infty} 2ye^{-y^2}\\,dy = [-e^{-y^2}]_0^{\\infty} = 0 - (-1) = 1$. &#10003;
+
+This is actually a Rayleigh-like distribution. Compare with the CDF technique (Q43): both methods give the same answer, but the formula is faster when the transformation is monotonic.`},
+
+{ch:"ch5",chLabel:"Ch 5: Continuous Distributions",id:91,title:"CLT: Sample Size Determination",
+text:`A machine fills bottles with a mean of 500 ml and standard deviation of 6 ml. How large a sample $n$ must be taken so that $P(|\\bar{X} - 500| < 1) \\geq 0.99$?`,
+tags:["CLT","sample size","backward"],
+sol:`By CLT: $\\bar{X} \\approx N(500, 36/n)$, so $\\frac{\\bar{X} - 500}{6/\\sqrt{n}} \\approx Z$.
+
+$$P(|\\bar{X} - 500| < 1) = P\\left(|Z| < \\frac{\\sqrt{n}}{6}\\right) \\geq 0.99$$
+
+For $P(|Z| < z_{0.005}) = 0.99$: $z_{0.005} = 2.576$ (from $\\Phi(2.576) = 0.995$).
+
+$$\\frac{\\sqrt{n}}{6} \\geq 2.576 \\implies \\sqrt{n} \\geq 15.456 \\implies n \\geq 238.9$$
+
+Round up: $n \\geq 239$.
+
+Compare with Chebyshev approach (Q35-style): Chebyshev gives $\\frac{36}{n(1)^2} \\leq 0.01$, so $n \\geq 3600$. CLT needs only 239 samples because it uses the Normal shape, while Chebyshev makes no distributional assumption and pays a steep price for generality.`},
+
+{ch:"ch5",chLabel:"Ch 5: Continuous Distributions",id:92,title:"Minimize E|X - a|: Median vs Mean",
+text:`Let $X$ have pdf $f(x) = 2x$ for $0 \\leq x \\leq 1$.
+<p>(a) Find $E(X)$ and the median $m$ of $X$.</p>
+<p>(b) Which minimizes $E(X - a)^2$? Which minimizes $E|X - a|$?</p>`,
+tags:["median","mean","optimization"],trap:true,
+sol:`(a) $E(X) = \\int_0^1 2x^2\\,dx = 2/3$.
+
+Median: solve $F(m) = 0.5$. $F(x) = \\int_0^x 2t\\,dt = x^2$.
+$$m^2 = 0.5 \\implies m = 1/\\sqrt{2} \\approx 0.7071$$
+
+(b) The mean minimizes $E(X-a)^2$ (mean squared error).
+
+The median minimizes $E|X - a|$ (mean absolute error).
+
+TRAP: these are different optimizers! The mean ($2/3 \\approx 0.667$) and median ($1/\\sqrt{2} \\approx 0.707$) differ here because the distribution is skewed.
+
+Why: $E(X-a)^2$ penalizes large deviations quadratically, making it sensitive to the tail, pulling toward the mean. $E|X-a|$ penalizes proportionally, making it robust to extremes, centering at the median.
+
+For symmetric distributions ($f$ symmetric about $\\mu$), the mean equals the median, so both criteria agree. For skewed distributions like this one, they disagree, and the choice of loss function matters.`},
+
+{ch:"ch5",chLabel:"Ch 5: Continuous Distributions",id:93,title:"The 68-95-99.7 Rule",
+text:`Adult heights are $N(170, 64)$ cm.
+<p>(a) Without tables, find the range that contains approximately 95% of heights.</p>
+<p>(b) A height of 186 cm is how many standard deviations above the mean? What percentile is this approximately?</p>
+<p>(c) What is $P(154 < X < 178)$ approximately?</p>`,
+tags:["Normal","empirical rule","68-95-99.7"],
+sol:`$\\mu = 170$, $\\sigma = \\sqrt{64} = 8$.
+
+(a) The 95% interval is $\\mu \\pm 2\\sigma = 170 \\pm 16 = [154, 186]$ cm.
+
+(By the 68-95-99.7 rule: 68% within $1\\sigma$, 95% within $2\\sigma$, 99.7% within $3\\sigma$.)
+
+(b) $z = (186 - 170)/8 = 2$. This is 2 standard deviations above the mean.
+
+Since 95% of the distribution is within $\\pm 2\\sigma$, the remaining 5% is split equally in both tails: 2.5% above $z = 2$. So 186 cm is approximately the 97.5th percentile.
+
+(c) $154 = \\mu - 2\\sigma$ and $178 = \\mu + \\sigma$.
+
+$P(\\mu - 2\\sigma < X < \\mu + \\sigma) = P(-2 < Z < 1)$
+
+Break it up: $P(Z < 1) - P(Z < -2)$.
+
+$P(Z < 1) \\approx 0.5 + 0.68/2 = 0.84$
+
+$P(Z < -2) \\approx 0.025$ (lower 2.5%)
+
+$$P \\approx 0.84 - 0.025 = 0.815$$
+
+(Exact: $\\Phi(1) - \\Phi(-2) = 0.8413 - 0.0228 = 0.8185$.)
+
+The 68-95-99.7 rule gives fast approximate answers without tables. It is precise enough for estimation and sanity-checking.`},
+
+// ===================== PHASE 3: FINAL GAP FILL =====================
+
+// ===== CLT GAPS =====
+{ch:"ch5",chLabel:"Ch 5: Continuous Distributions",id:94,title:"CLT on Sample Mean (Non-Binomial)",
+text:`The lifetime of a battery is Exponential with mean 100 hours ($\\lambda = 0.01$). A device uses 36 batteries sequentially. Find the probability that the total lifetime of all 36 batteries exceeds 3,800 hours. Also find $P(\\bar{X} > 110)$.`,
+tags:["CLT","sample mean","Exponential"],
+sol:`Each $X_i \\sim \\text{Exp}(0.01)$: $E(X_i) = 100$, $\\text{Var}(X_i) = 1/\\lambda^2 = 10{,}000$.
+
+Part 1 (sum): $S = X_1 + \\cdots + X_{36}$. By CLT:
+$$E(S) = 36(100) = 3600, \\quad \\text{Var}(S) = 36(10{,}000) = 360{,}000$$
+
+$$P(S > 3800) = P\\left(Z > \\frac{3800 - 3600}{\\sqrt{360{,}000}}\\right) = P\\left(Z > \\frac{200}{600}\\right) = P(Z > 0.333)$$
+$$= 1 - \\Phi(0.333) \\approx 1 - 0.6304 = 0.3696$$
+
+No continuity correction needed (continuous RV).
+
+Part 2 (mean): $\\bar{X} = S/36$.
+$$E(\\bar{X}) = 100, \\quad \\text{Var}(\\bar{X}) = 10{,}000/36 = 277.78$$
+
+$$P(\\bar{X} > 110) = P\\left(Z > \\frac{110 - 100}{\\sqrt{277.78}}\\right) = P\\left(Z > \\frac{10}{16.67}\\right) = P(Z > 0.600) \\approx 0.2743$$
+
+Key: CLT applies to ANY distribution with finite mean and variance, not just Binomial. For $S$: standardize with $n\\mu$ and $\\sqrt{n}\\sigma$. For $\\bar{X}$: standardize with $\\mu$ and $\\sigma/\\sqrt{n}$.`},
+
+{ch:"ch5",chLabel:"Ch 5: Continuous Distributions",id:95,title:"Continuity Correction: All Direction Cases",
+text:`Let $X \\sim \\text{Bin}(200, 0.3)$. Using the Normal approximation, compute each of the following. State the continuity correction boundary in each case.
+<p>(a) $P(X \\leq 55)$</p>
+<p>(b) $P(X \\geq 65)$</p>
+<p>(c) $P(X = 60)$</p>
+<p>(d) $P(55 \\leq X \\leq 65)$</p>
+<p>(e) $P(X > 55)$</p>`,
+tags:["CLT","continuity correction","all cases"],trap:true,
+sol:`$E(X) = 60$, $\\text{Var}(X) = 200(0.3)(0.7) = 42$, $\\sigma = \\sqrt{42} \\approx 6.48$.
+
+The rule: expand the discrete range by 0.5 in each direction to "include" the boundary values.
+
+(a) $P(X \\leq 55) \\to P(Y \\leq 55.5) = P(Z \\leq (55.5-60)/6.48) = P(Z \\leq -0.694) \\approx 0.244$
+
+(b) $P(X \\geq 65) \\to P(Y \\geq 64.5) = P(Z \\geq (64.5-60)/6.48) = P(Z \\geq 0.694) \\approx 0.244$
+
+(c) $P(X = 60) \\to P(59.5 \\leq Y \\leq 60.5) = P(-0.077 \\leq Z \\leq 0.077) \\approx 0.061$
+
+(d) $P(55 \\leq X \\leq 65) \\to P(54.5 \\leq Y \\leq 65.5) = P(-0.849 \\leq Z \\leq 0.849) \\approx 0.604$
+
+(e) TRAP: $P(X > 55) \\neq P(X \\geq 55)$ for discrete. $P(X > 55) = P(X \\geq 56)$, so:
+$$P(X > 55) \\to P(Y \\geq 55.5) = P(Z \\geq -0.694) \\approx 0.756$$
+
+Mnemonic: always convert to $\\leq$ or $\\geq$ first (so $> 55$ becomes $\\geq 56$), THEN slide 0.5 outward from the boundary to include it.`},
+
+{ch:"ch5",chLabel:"Ch 5: Continuous Distributions",id:96,title:"Normal Approximation to Poisson",
+text:`Calls arrive at a call center as a Poisson process with rate 144 per hour. Find $P(X \\leq 120)$ where $X$ is the number of calls in an hour, and $P(130 \\leq X \\leq 160)$.`,
+tags:["CLT","Poisson","Normal approximation"],
+sol:`$X \\sim \\text{Poi}(144)$. Since $\\mu = 144$ is large, use Normal approximation: $X \\approx N(144, 144)$, so $\\sigma = 12$.
+
+$P(X \\leq 120)$: with continuity correction (Poisson is discrete):
+$$P(X \\leq 120) \\approx P\\left(Z \\leq \\frac{120.5 - 144}{12}\\right) = P(Z \\leq -1.958) \\approx 0.0251$$
+
+$P(130 \\leq X \\leq 160)$:
+$$P(129.5 \\leq Y \\leq 160.5) = P\\left(\\frac{129.5 - 144}{12} \\leq Z \\leq \\frac{160.5 - 144}{12}\\right)$$
+$$= P(-1.208 \\leq Z \\leq 1.375) = \\Phi(1.375) - \\Phi(-1.208) \\approx 0.9155 - 0.1135 = 0.802$$
+
+Why this works: A $\\text{Poi}(\\mu)$ is the sum of $\\mu$ independent Poi(1) variables (reproductive property), so CLT applies directly when $\\mu$ is large. Rule of thumb: $\\mu \\geq 10$ is usually enough for the Normal approximation.`},
+
+// ===== OTHER FLAGGED GAPS =====
+{ch:"ch4",chLabel:"Ch 4: Multivariate Distributions",id:97,title:"Conditional PMF and Conditional Expectation from Joint Table",
+text:`$(X, Y)$ have joint PMF:
+
+| | $Y=0$ | $Y=1$ | $Y=2$ |
+|---|---|---|---|
+| $X=0$ | 0.05 | 0.10 | 0.05 |
+| $X=1$ | 0.10 | 0.25 | 0.15 |
+| $X=2$ | 0.05 | 0.10 | 0.15 |
+
+<p>(a) Find $f_{Y|X}(y \\mid X = 1)$ for all $y$.</p>
+<p>(b) Find $E(Y \\mid X = 1)$ and $\\text{Var}(Y \\mid X = 1)$.</p>
+<p>(c) Verify Adam's law: $E[E(Y|X)] = E(Y)$.</p>`,
+tags:["conditional PMF","conditional expectation","Adam's law"],
+sol:`First, marginals: $f_X(0) = 0.20$, $f_X(1) = 0.50$, $f_X(2) = 0.30$.
+
+(a) Conditional PMF = joint / marginal:
+
+$$f_{Y|X}(y \\mid X=1) = \\frac{f(1, y)}{f_X(1)}$$
+
+<p class="step">$f(0 \\mid 1) = 0.10/0.50 = 0.20$</p>
+<p class="step">$f(1 \\mid 1) = 0.25/0.50 = 0.50$</p>
+<p class="step">$f(2 \\mid 1) = 0.15/0.50 = 0.30$</p>
+
+Check: $0.20 + 0.50 + 0.30 = 1$. &#10003;
+
+(b) $E(Y \\mid X=1) = 0(0.20) + 1(0.50) + 2(0.30) = 1.10$
+
+$E(Y^2 \\mid X=1) = 0(0.20) + 1(0.50) + 4(0.30) = 1.70$
+
+$\\text{Var}(Y \\mid X=1) = 1.70 - 1.10^2 = 1.70 - 1.21 = 0.49$
+
+(c) $E(Y|X=0) = 0(0.25) + 1(0.50) + 2(0.25) = 1.00$
+$E(Y|X=2) = 0(1/6) + 1(1/3) + 2(1/2) = 4/3$
+
+$E[E(Y|X)] = 1.00(0.20) + 1.10(0.50) + (4/3)(0.30) = 0.20 + 0.55 + 0.40 = 1.15$
+
+$E(Y) = 0(0.20) + 1(0.45) + 2(0.35) = 1.15$. &#10003; Adam's law holds.`},
+
+{ch:"ch3",chLabel:"Ch 3: Discrete Distributions",id:98,title:"Discrete Uniform Distribution",
+text:`A fair die is rolled. Let $X$ be the result.
+<p>(a) Write the PMF, CDF, and find $E(X)$, $\\text{Var}(X)$.</p>
+<p>(b) Generalize: for $X \\sim \\text{DU}(a, b)$ (integers $a$ to $b$), derive $E(X)$ and $\\text{Var}(X)$.</p>
+<p>(c) $Y = 2X - 1$. Find $E(Y)$ and $\\text{Var}(Y)$.</p>`,
+tags:["Discrete Uniform","named distribution"],
+sol:`(a) $X \\sim \\text{DU}(1, 6)$: $P(X = x) = 1/6$ for $x = 1, 2, \\ldots, 6$.
+
+CDF: $F(x) = x/6$ for $x = 1, \\ldots, 6$ (step function with jumps of $1/6$).
+
+$E(X) = (1+2+3+4+5+6)/6 = 21/6 = 3.5$
+
+$E(X^2) = (1+4+9+16+25+36)/6 = 91/6$
+
+$\\text{Var}(X) = 91/6 - (7/2)^2 = 91/6 - 49/4 = (182 - 147)/12 = 35/12 \\approx 2.917$
+
+(b) For $X \\sim \\text{DU}(a, b)$ with $n = b - a + 1$ values:
+
+$$E(X) = \\frac{a + b}{2} \\qquad \\text{Var}(X) = \\frac{n^2 - 1}{12} = \\frac{(b-a+1)^2 - 1}{12}$$
+
+For the die: $E = 7/2$, $\\text{Var} = (36-1)/12 = 35/12$. &#10003;
+
+(c) $E(Y) = 2(3.5) - 1 = 6$. $\\text{Var}(Y) = 4 \\cdot 35/12 = 35/3 \\approx 11.67$.`},
+
+{ch:"ch3",chLabel:"Ch 3: Discrete Distributions",id:99,title:"PMF Pipeline: Table to Everything",
+text:`A random variable $X$ has the following probability distribution:
+
+| $x$ | $-2$ | $-1$ | $0$ | $1$ | $3$ |
+|---|---|---|---|---|---|
+| $P(X=x)$ | $0.1$ | $0.2$ | $c$ | $0.3$ | $0.1$ |
+
+<p>(a) Find $c$.</p>
+<p>(b) Find $E(X)$, $E(X^2)$, $\\text{Var}(X)$, $\\text{SD}(X)$.</p>
+<p>(c) Find $E(3X^2 - 2X + 1)$.</p>
+<p>(d) Find $P(|X| \\geq 1)$.</p>`,
+tags:["PMF","expected value","variance","pipeline"],
+sol:`(a) $\\sum P = 0.1 + 0.2 + c + 0.3 + 0.1 = 1 \\implies c = 0.3$.
+
+(b) $E(X) = (-2)(0.1) + (-1)(0.2) + 0(0.3) + 1(0.3) + 3(0.1) = -0.2 - 0.2 + 0 + 0.3 + 0.3 = 0.2$
+
+$E(X^2) = 4(0.1) + 1(0.2) + 0(0.3) + 1(0.3) + 9(0.1) = 0.4 + 0.2 + 0 + 0.3 + 0.9 = 1.8$
+
+$\\text{Var}(X) = E(X^2) - [E(X)]^2 = 1.8 - 0.04 = 1.76$
+
+$\\text{SD}(X) = \\sqrt{1.76} \\approx 1.327$
+
+(c) By linearity: $E(3X^2 - 2X + 1) = 3E(X^2) - 2E(X) + 1 = 3(1.8) - 2(0.2) + 1 = 5.4 - 0.4 + 1 = 6.0$
+
+(d) $P(|X| \\geq 1) = 1 - P(X = 0) = 1 - 0.3 = 0.7$
+
+Alternatively: $P(X = -2) + P(X = -1) + P(X = 1) + P(X = 3) = 0.1 + 0.2 + 0.3 + 0.1 = 0.7$. &#10003;`},
+
+{ch:"ch3",chLabel:"Ch 3: Discrete Distributions",id:100,title:"Poisson Approximation to Binomial",
+text:`A batch of 500 items has a 0.4% defect rate (independently). Let $X$ = number of defectives.
+<p>(a) What is the exact distribution of $X$?</p>
+<p>(b) Justify and apply the Poisson approximation. Find $P(X = 0)$, $P(X \\geq 3)$.</p>
+<p>(c) An item is "rare defective" (prob $10^{-5}$) in a batch of $10^5$. Find $P(X = 0)$.</p>`,
+tags:["Poisson approximation","Binomial","rare events"],
+sol:`(a) $X \\sim \\text{Bin}(500, 0.004)$.
+
+(b) Conditions: $n = 500$ is large, $p = 0.004$ is small, $\\mu = np = 2$ is moderate. So $X \\approx \\text{Poi}(2)$.
+
+$P(X = 0) \\approx e^{-2} \\approx 0.1353$
+
+$P(X \\geq 3) = 1 - P(X \\leq 2) = 1 - e^{-2}(1 + 2 + 2) = 1 - 5e^{-2} \\approx 1 - 0.6767 = 0.3233$
+
+(c) $n = 10^5$, $p = 10^{-5}$, $\\mu = np = 1$. $X \\approx \\text{Poi}(1)$.
+
+$P(X = 0) \\approx e^{-1} \\approx 0.3679$.
+
+Rule of thumb for when to use Poisson approximation: $n \\geq 100$, $p \\leq 0.01$, $np \\leq 20$. The approximation is exact in the limit $n \\to \\infty$, $p \\to 0$, $np \\to \\mu$.`},
+
+{ch:"ch5",chLabel:"Ch 5: Continuous Distributions",id:101,title:"CLT: Difference of Two Independent Sample Means",
+text:`Machine A produces bolts with mean length 5.00 cm ($\\sigma_A = 0.04$). Machine B produces bolts with mean length 5.02 cm ($\\sigma_B = 0.06$). Samples of $n_A = 40$ and $n_B = 50$ are taken independently. Find $P(\\bar{X}_A > \\bar{X}_B)$.`,
+tags:["CLT","difference of means","Normal"],
+sol:`Let $D = \\bar{X}_A - \\bar{X}_B$. By CLT, both sample means are approximately Normal, and their difference is Normal:
+
+$$E(D) = 5.00 - 5.02 = -0.02$$
+
+$$\\text{Var}(D) = \\frac{\\sigma_A^2}{n_A} + \\frac{\\sigma_B^2}{n_B} = \\frac{0.0016}{40} + \\frac{0.0036}{50} = 0.00004 + 0.000072 = 0.000112$$
+
+$$\\text{SD}(D) = \\sqrt{0.000112} \\approx 0.01058$$
+
+$$P(\\bar{X}_A > \\bar{X}_B) = P(D > 0) = P\\left(Z > \\frac{0 - (-0.02)}{0.01058}\\right) = P(Z > 1.89)$$
+
+$$= 1 - \\Phi(1.89) \\approx 1 - 0.9706 = 0.0294$$
+
+There is about a 3% chance Machine A's sample average exceeds Machine B's, even though A's true mean is smaller. This is because the sampling variability could produce a misleading comparison.
+
+Key: variances ADD in the difference (just like Q32 and Q44), and no continuity correction is needed since sample means are continuous.`},
+
+];
+
+const chapters = [
+  {key:"all",label:"All"},
+  {key:"ch1",label:"Ch 1"},
+  {key:"ch2",label:"Ch 2"},
+  {key:"ch3",label:"Ch 3"},
+  {key:"ch4",label:"Ch 4"},
+  {key:"ch5",label:"Ch 5"},
+  {key:"chx",label:"Cross-Topic"}
+];
+
+let activeTab = "all";
+let openCards = new Set();
+let doneCards = new Set();
+
+function render() {
+  const tabsEl = document.getElementById("tabs");
+  tabsEl.innerHTML = chapters.map(c =>
+    `<button class="tab ${activeTab===c.key?'active':''}" onclick="setTab('${c.key}')">${c.label}</button>`
+  ).join("");
+
+  const chOrder = {ch1:1,ch2:2,ch3:3,ch4:4,ch5:5,chx:6};
+  const filtered = (activeTab === "all" ? [...Q] : Q.filter(q => q.ch === activeTab))
+    .sort((a,b) => (chOrder[a.ch]-chOrder[b.ch]) || (a.id-b.id));
+  let html = "";
+  let lastCh = "";
+
+  for (const q of filtered) {
+    if (q.chLabel !== lastCh) {
+      lastCh = q.chLabel;
+      html += `<div class="${q.ch}"><div class="chapter-label">${q.chLabel}</div></div>`;
+    }
+    const isOpen = openCards.has(q.id);
+    const isDone = doneCards.has(q.id);
+    const srcTag = q.id >= 65 ? '<span class="src-tag">' + (q.id <= 78 ? 'TEXTBOOK' : 'TEXTBOOK+') + '</span>' : '';
+    html += `<div class="card ${q.ch} ${isOpen?'open':''} ${isDone?'done':''}" id="card-${q.id}">
+      <div class="card-head" onclick="toggle(${q.id})">
+        <div class="q-num">Q${q.id}</div>
+        <div class="q-body">
+          <div class="q-title">${q.title} ${srcTag}</div>
+          <div class="q-text">${q.text}</div>
+          <div class="tags">${q.tags.map(t => `<span class="tag${q.trap?' trap':''}">${t}</span>`).join("")}${q.trap?'<span class="tag trap">trap</span>':''}</div>
+        </div>
+        <div class="chevron">&#9654;</div>
+      </div>
+      <div class="solution">
+        <div class="sol-label">Solution</div>
+        <div class="sol-text">${q.sol}</div>
+        <button class="mark-btn ${isDone?'marked':''}" onclick="markDone(${q.id},event)">
+          ${isDone ? '&#10003; Completed' : 'Mark complete'}
+        </button>
+      </div>
+    </div>`;
+  }
+
+  document.getElementById("main").innerHTML = html;
+  updateProgress();
+  renderMath();
+}
+
+function renderMath() {
+  renderMathInElement(document.getElementById("main"), {
+    delimiters: [
+      {left: "$$", right: "$$", display: true},
+      {left: "$", right: "$", display: false}
+    ],
+    throwOnError: false
+  });
+}
+
+function setTab(key) {
+  activeTab = key;
+  render();
+}
+
+function toggle(id) {
+  if (openCards.has(id)) openCards.delete(id);
+  else openCards.add(id);
+  render();
+}
+
+function markDone(id, e) {
+  e.stopPropagation();
+  if (doneCards.has(id)) doneCards.delete(id);
+  else doneCards.add(id);
+  render();
+}
+
+function updateProgress() {
+  const total = Q.length;
+  const done = doneCards.size;
+  document.getElementById("prog-label").textContent = `${done} / ${total}`;
+  document.getElementById("prog-fill").style.width = `${(done/total)*100}%`;
+}
+
+render();
+</script>
